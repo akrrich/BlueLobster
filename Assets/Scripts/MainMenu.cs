@@ -8,6 +8,8 @@ public class MainMenu : MonoBehaviour
 
     private AudioSource buttonClick;
 
+    public AudioClip audios;
+
 
     void Start()
     {
