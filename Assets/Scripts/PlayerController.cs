@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
     private Rigidbody2D rb;
 
     private float XAxis;
@@ -12,24 +9,29 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float speed;
 
+
     void Awake()
     {
         GetComponents();
     }
-
     
     void Update()
     {
-        GetInputs();
+        GetAxis();
+    }
+
+    void FixedUpdate()
+    {
         PlayerMovement();
     }
+
 
     private void GetComponents()
     {
        rb = GetComponent<Rigidbody2D>();
     }
 
-    private void GetInputs()
+    private void GetAxis()
     {
         XAxis = Input.GetAxisRaw("Horizontal");
         YAxis = Input.GetAxisRaw("Vertical");
