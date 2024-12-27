@@ -1,14 +1,15 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private GameObject panelSettings;
 
-    private AudioSource buttonClick;
+    [SerializeField] private Button[] buttonsClickOnce;
 
-    public AudioClip audios;
+    private AudioSource buttonClick;
 
 
     void Start()
@@ -48,6 +49,7 @@ public class MainMenu : MonoBehaviour
     private IEnumerator LoadSceneAfterButtonClick()
     {
         buttonClick.Play();
+        buttonsClickOnce[0].interactable = false;
 
         yield return new WaitForSeconds(buttonClick.clip.length);
 
@@ -57,6 +59,7 @@ public class MainMenu : MonoBehaviour
     private IEnumerator CloseGameAfterClickButton()
     {
         buttonClick.Play();
+        buttonsClickOnce[1].interactable = false;
 
         yield return new WaitForSeconds(buttonClick.clip.length);
 

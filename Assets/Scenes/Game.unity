@@ -3142,6 +3142,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panelPause: {fileID: 694007001}
   panelSettings: {fileID: 230462825}
+  buttonsClickOnce:
+  - {fileID: 337832665}
+  - {fileID: 962838339}
 --- !u!82 &320595189
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4162,7 +4165,7 @@ Transform:
   m_GameObject: {fileID: 629959702}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.40374097, y: -0.04485772, z: 0}
+  m_LocalPosition: {x: -422.80374, y: -0.04485772, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5425,7 +5428,7 @@ Transform:
   m_GameObject: {fileID: 1053890880}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5012, y: 0.3972, z: 0}
+  m_LocalPosition: {x: -422.90118, y: 0.3972, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5714,7 +5717,7 @@ Transform:
   m_GameObject: {fileID: 1202139181}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -422.4, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7901,7 +7904,7 @@ Transform:
   m_GameObject: {fileID: 1945349797}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.06906923, y: -1.4426774, z: -0.0012246124}
+  m_LocalPosition: {x: -422.33093, y: -1.4426774, z: -0.0012246124}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

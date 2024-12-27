@@ -8,6 +8,8 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private GameObject panelPause;
     [SerializeField] private GameObject panelSettings;
 
+    [SerializeField] private Button[] buttonsClickOnce;
+
     private Button buttonPause;
     private AudioSource buttonClick;
 
@@ -69,6 +71,7 @@ public class PauseManager : MonoBehaviour
     private IEnumerator LoadSceneAfterButtonClick()
     {
         buttonClick.Play();
+        buttonsClickOnce[0].interactable = false;
 
         yield return new WaitForSeconds(buttonClick.clip.length);
 
@@ -78,6 +81,7 @@ public class PauseManager : MonoBehaviour
     private IEnumerator CloseGameAfterClickButton()
     {
         buttonClick.Play();
+        buttonsClickOnce[1].interactable = false;
 
         yield return new WaitForSeconds(buttonClick.clip.length);
 
