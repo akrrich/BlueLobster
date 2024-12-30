@@ -3145,6 +3145,7 @@ MonoBehaviour:
   buttonsClickOnce:
   - {fileID: 337832665}
   - {fileID: 962838339}
+  playerController: {fileID: 629959705}
 --- !u!82 &320595189
 AudioSource:
   m_ObjectHideFlags: 0

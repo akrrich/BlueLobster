@@ -54,6 +54,7 @@ public class MainMenu : MonoBehaviour
         yield return new WaitForSeconds(buttonClick.clip.length);
 
         SceneManager.LoadSceneAsync("Game");
+        GameManager.Instance.ChangeStateTo(GameState.Playing);
     }
 
     private IEnumerator CloseGameAfterClickButton()

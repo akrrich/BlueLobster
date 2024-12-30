@@ -13,22 +13,37 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         GetComponents();
+        SubscribeToGameManagerEvents();
     }
     
-    void Update()
+    // Simulacion de Update
+    void UpdatePlayerController()
     {
         GetAxis();
     }
 
-    void FixedUpdate()
+    // Simulacion de FixedUpdate
+    void FixedUpdatePlayerController()
     {
         PlayerMovement();
+    }
+
+    void OnDestroy()
+    {
+        GameManager.Instance.OnGameStatePlaying -= UpdatePlayerController;
+        GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdatePlayerController;
     }
 
 
     private void GetComponents()
     {
        rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void SubscribeToGameManagerEvents()
+    {
+        GameManager.Instance.OnGameStatePlaying += UpdatePlayerController;
+        GameManager.Instance.OnGameStatePlayingFixedUpdate += FixedUpdatePlayerController;
     }
 
     private void GetAxis()
@@ -41,7 +56,6 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 PlayerVelocity = new Vector2(XAxis, YAxis);
         rb.velocity = PlayerVelocity.normalized * speed;
-
 
         if (rb.velocity.x != 0)
         {

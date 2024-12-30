@@ -52,6 +52,7 @@ public class PauseManager : MonoBehaviour
 
     public void ButtonMainMenu()
     {
+        GameManager.Instance.ChangeStateTo(GameState.Menu);
         Time.timeScale = 1f;
         StartCoroutine(LoadSceneAfterButtonClick());
     }
