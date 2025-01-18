@@ -1,8 +1,9 @@
 using UnityEngine;
-using System;
 
 public class PlayerController : MonoBehaviour
 {
+    private Props currentProp;
+
     private Rigidbody2D rb;
 
     private float XAxis;
@@ -12,11 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int detectionRadius = 5;
     [SerializeField] private LayerMask detectionLayer;
 
-    Props currentProp;
-
     private bool pickObject = false;
-
-    public Action interactionP;
 
 
     void Awake()
@@ -29,8 +26,9 @@ public class PlayerController : MonoBehaviour
     void UpdatePlayerController()
     {
         GetAxis();
-        CheckNearbyObjects();
-        ThrowObject();
+        PickUp();
+        Drop();
+        Throw();
     }
 
     // Simulacion de FixedUpdate
@@ -41,8 +39,7 @@ public class PlayerController : MonoBehaviour
 
     void OnDestroy()
     {
-        GameManager.Instance.OnGameStatePlaying -= UpdatePlayerController;
-        GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdatePlayerController;
+        UnsubscribeToGameManagerEvents();
     }
 
     void OnDrawGizmosSelected()
@@ -52,44 +49,21 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void CheckNearbyObjects()
-    {
-        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, detectionRadius, detectionLayer);
-
-        foreach (var obj in objectsInRange)
-        {
-            if (obj.CompareTag("Objeto"))
-            {
-                
-                if (Input.GetKeyDown(KeyCode.Z) && pickObject == false)
-                {
-                    currentProp = obj.GetComponent<Props>();
-                    if (currentProp != null)
-                    {
-                        interactionP += () => currentProp.PickObject(transform);
-                        ProduceEvent();
-                        interactionP -= () => currentProp.PickObject(transform);
-                        pickObject = true;
-                    }
-                }
-            }
-        }
-    }
-    
     private void GetComponents()
-        {
-           rb = GetComponent<Rigidbody2D>();
-        }
-
-    private void ProduceEvent()
     {
-        interactionP?.Invoke();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void SubscribeToGameManagerEvents()
     {
         GameManager.Instance.OnGameStatePlaying += UpdatePlayerController;
         GameManager.Instance.OnGameStatePlayingFixedUpdate += FixedUpdatePlayerController;
+    }
+
+    private void UnsubscribeToGameManagerEvents()
+    {
+        GameManager.Instance.OnGameStatePlaying -= UpdatePlayerController;
+        GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdatePlayerController;
     }
 
     private void GetAxis()
@@ -108,9 +82,10 @@ public class PlayerController : MonoBehaviour
             transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
             transform.localScale = new Vector2(XAxis, transform.localScale.y);
         }
+
         else
         {
-            if(rb.velocity.y != 0)
+            if (rb.velocity.y != 0)
             {
                 float angle = (YAxis > 0) ? 90f : -90f; // 90° arriba, -90° abajo
                 transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -119,38 +94,52 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void ThrowObject()
+    private Props FindCurrentProp()
     {
-        if(pickObject == true && Input.GetKeyDown(KeyCode.Z))
+        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, detectionRadius, detectionLayer);
+
+        foreach (var obj in objectsInRange)
         {
-            Vector2 direction = Vector2.zero;
-
-            switch (transform.localScale.x)
+            if (obj.CompareTag("Objeto"))
             {
-                case 1:
-                    direction = Vector2.right;
-                    break;
-                case -1:
-                    direction = Vector2.left;
-                    break;
-            }
+                currentProp = obj.GetComponent<Props>();
 
-            switch (transform.rotation.z)
-            {
-                case 90:
-                    direction = Vector2.up;
-                    break;
-                case -90:
-                    direction = Vector2.down;
-                    break;
+                if (currentProp != null)
+                {
+                    return currentProp;
+                }
             }
+        }
 
-            if (direction != Vector2.zero)
-            {
-                interactionP += () => currentProp.ThrowObject(direction);
-                ProduceEvent();
-                interactionP -= () => currentProp.ThrowObject(direction);
-            }
+        return null;
+    }
+
+    private void PickUp()
+    {
+        if (Input.GetKeyDown(KeyCode.Z) && pickObject == false)
+        {
+            FindCurrentProp();
+
+            currentProp.PickObject();
+            pickObject = true;
+        }
+    }
+
+    private void Drop()
+    {
+        if (pickObject == true && Input.GetKeyDown(KeyCode.X))
+        {
+            currentProp.DropObject();
+            pickObject = false;
+        }
+    }
+
+    private void Throw()
+    {
+        if (pickObject == true && Input.GetKeyDown(KeyCode.C))
+        {
+            currentProp.ThrowObject();
+            pickObject = false;
         }
     }
 }
