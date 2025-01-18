@@ -45,6 +45,12 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdatePlayerController;
     }
 
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+    }
+
 
     private void CheckNearbyObjects()
     {
@@ -69,15 +75,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
-    // Para visualizar el área de detección (opcional)
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
-    }
     
-
     private void GetComponents()
         {
            rb = GetComponent<Rigidbody2D>();
@@ -125,30 +123,33 @@ public class PlayerController : MonoBehaviour
     {
         if(pickObject == true && Input.GetKeyDown(KeyCode.Z))
         {
-            if (transform.localScale.x == 1)
-            {
-                interactionP += () => currentProp.ThrowObject(Vector2.right);
-                ProduceEvent();
-                interactionP -= () => currentProp.ThrowObject(Vector2.right);
+            Vector2 direction = Vector2.zero;
 
-            }
-            else if (transform.localScale.x == -1)
+            switch (transform.localScale.x)
             {
-                interactionP += () => currentProp.ThrowObject(Vector2.left);
-                ProduceEvent();
-                interactionP -= () => currentProp.ThrowObject(Vector2.left);
+                case 1:
+                    direction = Vector2.right;
+                    break;
+                case -1:
+                    direction = Vector2.left;
+                    break;
             }
-            else if (transform.rotation.z == 90)
+
+            switch (transform.rotation.z)
             {
-                interactionP += () => currentProp.ThrowObject(Vector2.up);
-                ProduceEvent();
-                interactionP -= () => currentProp.ThrowObject(Vector2.up);
+                case 90:
+                    direction = Vector2.up;
+                    break;
+                case -90:
+                    direction = Vector2.down;
+                    break;
             }
-            else if (transform.rotation.z == -90)
+
+            if (direction != Vector2.zero)
             {
-                interactionP += () => currentProp.ThrowObject(Vector2.down);
+                interactionP += () => currentProp.ThrowObject(direction);
                 ProduceEvent();
-                interactionP -= () => currentProp.ThrowObject(Vector2.down);
+                interactionP -= () => currentProp.ThrowObject(direction);
             }
         }
     }

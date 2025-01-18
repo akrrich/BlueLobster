@@ -27,8 +27,7 @@ public class Props : MonoBehaviour
 
         if (zRotation != 90 && zRotation != 270) 
         {
-         objectposition = new Vector3(playerPosition.position.x + relativePosition.x, playerPosition.position.y + relativePosition.y, playerPosition.position.z + relativePosition.z);
-         //objectposition = playerPosition.position + relativePosition;
+            objectposition = playerPosition.position + relativePosition;
         }
         else
         {
