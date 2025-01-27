@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int detectionRadius = 5;
     [SerializeField] private LayerMask detectionLayer;
 
+    [SerializeField] private Transform propPosition;
+
     private bool pickObject = false;
 
 
@@ -27,7 +29,6 @@ public class PlayerController : MonoBehaviour
     {
         GetAxis();
         PickUp();
-        Drop();
         Throw();
     }
 
@@ -120,25 +121,19 @@ public class PlayerController : MonoBehaviour
         {
             FindCurrentProp();
 
-            currentProp.PickObject();
-            pickObject = true;
+            if (currentProp != null)
+            {
+                currentProp.PickObject(propPosition);
+                pickObject = true;
+            }
         }
     }
-
-    private void Drop()
-    {
-        if (pickObject == true && Input.GetKeyDown(KeyCode.X))
-        {
-            currentProp.DropObject();
-            pickObject = false;
-        }
-    }
-
     private void Throw()
     {
         if (pickObject == true && Input.GetKeyDown(KeyCode.C))
         {
             currentProp.ThrowObject();
+            currentProp = null;
             pickObject = false;
         }
     }

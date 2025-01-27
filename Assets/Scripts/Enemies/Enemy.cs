@@ -109,6 +109,7 @@ public abstract class Enemy : MonoBehaviour
         return currentPointIndex = newPointIndex;
     }
 
+    public abstract void GetDamage(int damage);
 
     protected abstract void AttackPlayer(Collision2D collision2D);
 }

@@ -7,6 +7,8 @@ public class EnemyMelee : Enemy
 
     private bool isCollidingWithPlayer = false;
 
+    [SerializeField] private int health;
+
 
     void OnCollisionStay2D(Collision2D collision2D)
     {
@@ -31,6 +33,13 @@ public class EnemyMelee : Enemy
         {
             StartCoroutine(DamageCooldown());
         }
+    }
+
+    public override void GetDamage(int damage)
+    {
+        health -= damage;
+        print("hola");
+        if(health < 0) Destroy(gameObject);
     }
 
     private IEnumerator DamageCooldown()
