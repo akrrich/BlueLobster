@@ -5,7 +5,8 @@ public class PlayerController : MonoBehaviour
     private Props currentProp;
 
     private Rigidbody2D rb;
-
+    private Transform propPosition;
+    
     private float XAxis;
     private float YAxis;
 
@@ -13,9 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int detectionRadius = 5;
     [SerializeField] private LayerMask detectionLayer;
 
-    [SerializeField] private Transform propPosition;
-
-    private bool pickObject = false;
+    private bool isBeenPickedUp = false;
 
 
     void Awake()
@@ -53,6 +52,7 @@ public class PlayerController : MonoBehaviour
     private void GetComponents()
     {
         rb = GetComponent<Rigidbody2D>();
+        propPosition = transform.Find("PropPosition").GetComponent<Transform>();
     }
 
     private void SubscribeToGameManagerEvents()
@@ -95,46 +95,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private Props FindCurrentProp()
-    {
-        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, detectionRadius, detectionLayer);
-
-        foreach (var obj in objectsInRange)
-        {
-            if (obj.CompareTag("Objeto"))
-            {
-                currentProp = obj.GetComponent<Props>();
-
-                if (currentProp != null)
-                {
-                    return currentProp;
-                }
-            }
-        }
-
-        return null;
-    }
-
     private void PickUp()
     {
-        if (Input.GetKeyDown(KeyCode.Z) && pickObject == false)
+        if (!isBeenPickedUp && Input.GetKeyDown(KeyCode.Z))
         {
-            FindCurrentProp();
+            currentProp = Props.FindCurrentProp(currentProp, transform.position, detectionRadius, detectionLayer);
 
             if (currentProp != null)
             {
                 currentProp.PickObject(propPosition);
-                pickObject = true;
+                isBeenPickedUp = true;
             }
         }
     }
+
     private void Throw()
     {
-        if (pickObject == true && Input.GetKeyDown(KeyCode.C))
+        if (isBeenPickedUp && Input.GetKeyDown(KeyCode.C))
         {
             currentProp.ThrowObject();
             currentProp = null;
-            pickObject = false;
+            isBeenPickedUp = false;
         }
     }
 }

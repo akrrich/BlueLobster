@@ -1,39 +1,35 @@
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class Props : MonoBehaviour
 {
     private PlayerController playerController;
+    private Enemy currentEnemy;
 
     private Rigidbody2D rb;
+    private SpriteRenderer shadow;
 
     [SerializeField] private int damage;
     [SerializeField] private int velocity;
     [SerializeField] private int durability;
 
-    //private Vector3 objectposition;
-    [SerializeField] private Vector3 relativePosition;
-
     private bool hasBeenThrown = false;
-    private Enemy currentEnemy;
 
 
     void Awake()
     {
-        FindPlayerController();
         GetComponents();
+        InitializeReferences();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        if(hasBeenThrown)
+        if (hasBeenThrown)
         {
             if (collision.collider.CompareTag("Enemy"))
             {
-                Enemy enemy = collision.collider.GetComponent<Enemy>();
-                if (enemy != null)
+                currentEnemy = collision.collider.GetComponent<Enemy>();
+                if (currentEnemy != null)
                 {
-                    currentEnemy = enemy;
                     currentEnemy.GetDamage(10);
                     Destroy(gameObject);
                 }
@@ -45,16 +41,38 @@ public class Props : MonoBehaviour
         }
     }
 
-    public void PickObject( Transform objectPosition)
+
+    public static Props FindCurrentProp(Props currentProp, Vector2 position, float detectionRadius, LayerMask detectionLayer)
+    {
+        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(position, detectionRadius, detectionLayer);
+
+        foreach (var obj in objectsInRange)
+        {
+            if (obj.CompareTag("Objeto"))
+            {
+                currentProp = obj.GetComponent<Props>();
+
+                if (currentProp != null)
+                {
+                    return currentProp;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void PickObject(Transform objectPosition)
     {
         rb.isKinematic = true;
         rb.simulated = false;
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
 
-        transform.position =objectPosition.position;
-        transform.SetParent(playerController.transform);
+        shadow.color = Color.green;
 
+        transform.position = objectPosition.position;
+        transform.SetParent(playerController.transform);
     }
 
     public void ThrowObject()
@@ -70,7 +88,7 @@ public class Props : MonoBehaviour
         switch (zRotation)
         {
             case 0:
-                if(playerController.transform.localScale.x == 1) throwDirection = Vector2.right;
+                if (playerController.transform.localScale.x == 1) throwDirection = Vector2.right;
                 else if (playerController.transform.localScale.x == -1) throwDirection = Vector2.left;
                 break;
             case 90:
@@ -85,47 +103,18 @@ public class Props : MonoBehaviour
         hasBeenThrown = true;
     }
 
-    private void FindPlayerController()
-    {
-        playerController = FindObjectOfType<PlayerController>();
-    }
 
     private void GetComponents()
     {
+        playerController = FindObjectOfType<PlayerController>();
+
         rb = GetComponent<Rigidbody2D>();
-        rb.isKinematic = true;
+        shadow = transform.Find("Shadow").GetComponent<SpriteRenderer>();
     }
 
-    /* rb.isKinematic = true;
-         rb.simulated = false;
-         rb.velocity = Vector2.zero;
-         rb.angularVelocity = 0f;
-
-         objectposition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-
-         //ajustar posicion de objeto segun direccion de jugador
-         float pruebax = relativePosition.x * playerController.transform.localScale.x;
-         relativePosition = new Vector3(pruebax, relativePosition.y, relativePosition.z);
-
-         // Obtener el ángulo de rotación del jugador en grados
-         float zRotation = playerController.transform.eulerAngles.z;
-
-         if (zRotation != 90 && zRotation != 270) 
-         {
-             objectposition = playerController.transform.position + relativePosition;
-         }
-
-         else
-         {
-             if (zRotation == 90)
-             {
-                 objectposition = new Vector3(playerController.transform.position.x, playerController.transform.position.y + 1.2f, playerController.transform.position.z);
-             }
-             else if (zRotation == 270) 
-             {
-                 objectposition = new Vector3(playerController.transform.position.x, playerController.transform.position.y - 1.2f, playerController.transform.position.z);
-             }
-         }
-
-         transform.SetParent(playerController.transform);*/
+    private void InitializeReferences()
+    {
+        rb.isKinematic = true;
+        shadow.color = Color.red;
+    }
 }
