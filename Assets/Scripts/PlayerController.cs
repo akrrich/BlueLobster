@@ -6,15 +6,15 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Transform propPosition;
+
+    private int radius = 1;
     
     private float XAxis;
     private float YAxis;
 
-    [SerializeField] private float speed;
-    [SerializeField] private int detectionRadius = 5;
-    [SerializeField] private LayerMask detectionLayer;
+    private float speed = 8;
 
-    private bool isBeenPickedUp = false;
+    [SerializeField] private LayerMask detectionLayer;
 
 
     void Awake()
@@ -26,7 +26,6 @@ public class PlayerController : MonoBehaviour
     // Simulacion de Update
     void UpdatePlayerController()
     {
-        GetAxis();
         PickUp();
         Throw();
     }
@@ -45,7 +44,7 @@ public class PlayerController : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 
 
@@ -67,14 +66,11 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdatePlayerController;
     }
 
-    private void GetAxis()
+    private void PlayerMovement()
     {
         XAxis = Input.GetAxisRaw("Horizontal");
         YAxis = Input.GetAxisRaw("Vertical");
-    }
 
-    private void PlayerMovement()
-    {
         Vector2 PlayerVelocity = new Vector2(XAxis, YAxis);
         rb.velocity = PlayerVelocity.normalized * speed;
 
@@ -97,25 +93,26 @@ public class PlayerController : MonoBehaviour
 
     private void PickUp()
     {
-        if (!isBeenPickedUp && Input.GetKeyDown(KeyCode.Z))
+        if (currentProp == null && Input.GetKeyDown(KeyCode.Z))
         {
-            currentProp = Props.FindCurrentProp(currentProp, transform.position, detectionRadius, detectionLayer);
+            currentProp = Props.FindCurrentProp(currentProp, transform.position, radius, detectionLayer);
 
             if (currentProp != null)
             {
                 currentProp.PickObject(propPosition);
-                isBeenPickedUp = true;
             }
         }
     }
 
     private void Throw()
     {
-        if (isBeenPickedUp && Input.GetKeyDown(KeyCode.C))
+        if (currentProp != null && Input.GetKeyDown(KeyCode.C))
         {
-            currentProp.ThrowObject();
-            currentProp = null;
-            isBeenPickedUp = false;
+            if (currentProp != null)
+            {
+                currentProp.ThrowObject();
+                currentProp = null;
+            }
         }
     }
 }

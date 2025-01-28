@@ -3,7 +3,6 @@ using UnityEngine;
 public class Props : MonoBehaviour
 {
     private PlayerController playerController;
-    private Enemy currentEnemy;
 
     private Rigidbody2D rb;
     private SpriteRenderer shadow;
@@ -23,28 +22,13 @@ public class Props : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (hasBeenThrown)
-        {
-            if (collision.collider.CompareTag("Enemy"))
-            {
-                currentEnemy = collision.collider.GetComponent<Enemy>();
-                if (currentEnemy != null)
-                {
-                    currentEnemy.GetDamage(10);
-                    Destroy(gameObject);
-                }
-            }
-            else if (collision.collider.CompareTag("Escenario"))
-            {
-                Destroy(gameObject);
-            }
-        }
+        HandleCollisions(collision);
     }
 
 
-    public static Props FindCurrentProp(Props currentProp, Vector2 position, float detectionRadius, LayerMask detectionLayer)
+    public static Props FindCurrentProp(Props currentProp, Vector2 position, float radius, LayerMask detectionLayer)
     {
-        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(position, detectionRadius, detectionLayer);
+        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(position, radius, detectionLayer);
 
         foreach (var obj in objectsInRange)
         {
@@ -60,6 +44,59 @@ public class Props : MonoBehaviour
         }
 
         return null;
+    }
+
+
+    private void GetComponents()
+    {
+        playerController = FindObjectOfType<PlayerController>();
+
+        rb = GetComponent<Rigidbody2D>();
+        shadow = transform.Find("Shadow").GetComponent<SpriteRenderer>();
+    }
+
+    private void InitializeReferences()
+    {
+        rb.isKinematic = true;
+        shadow.color = Color.red;
+    }
+
+    private void HandleCollisions(Collision2D collision)
+    {
+        string collisionTag = collision.collider.tag;
+
+        switch (collisionTag)
+        {
+            case "Enemy":
+                CheckEnemyColision(collision);
+                break;
+
+            default: 
+                CheckSceneryColisions(collision);
+                break;
+        }
+    }
+
+    private void CheckEnemyColision(Collision2D collision)
+    {
+        if (hasBeenThrown && collision.collider.CompareTag("Enemy"))
+        {
+            Enemy currentEnemy = collision.collider.GetComponent<Enemy>();
+
+            if (currentEnemy != null)
+            {
+                currentEnemy.GetDamage(damage);
+                Destroy(gameObject);
+            }
+        }
+    }
+
+    private void CheckSceneryColisions(Collision2D collision)
+    {
+        if (!collision.collider.CompareTag("Player"))
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void PickObject(Transform objectPosition)
@@ -101,20 +138,5 @@ public class Props : MonoBehaviour
 
         rb.AddForce(throwDirection * velocity, ForceMode2D.Impulse);
         hasBeenThrown = true;
-    }
-
-
-    private void GetComponents()
-    {
-        playerController = FindObjectOfType<PlayerController>();
-
-        rb = GetComponent<Rigidbody2D>();
-        shadow = transform.Find("Shadow").GetComponent<SpriteRenderer>();
-    }
-
-    private void InitializeReferences()
-    {
-        rb.isKinematic = true;
-        shadow.color = Color.red;
     }
 }

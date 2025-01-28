@@ -9,9 +9,12 @@ public abstract class Enemy : MonoBehaviour
     private Animator anim;
 
     private int currentPointIndex = 0;
+    protected int health;
+    private int minHealth = 1;
+    protected int damage;
 
-    private float speed = 2f;
-    private float radius = 3f;
+    protected float speed;
+    protected float radius;
 
     private Vector2 currentTarget;
 
@@ -19,11 +22,13 @@ public abstract class Enemy : MonoBehaviour
     void Awake()
     {
         GetComponents();
+        InitializeValues();
     }
 
     void Update()
     {
         CheckEnemyStates();
+        DestroyEnemy();
     }
 
     void OnTriggerEnter2D(Collider2D collider2D)
@@ -34,6 +39,12 @@ public abstract class Enemy : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision2D)
     {
         AttackPlayer(collision2D);
+    }
+
+
+    public void GetDamage(int damage)
+    {
+        health -= damage;
     }
 
 
@@ -109,7 +120,14 @@ public abstract class Enemy : MonoBehaviour
         return currentPointIndex = newPointIndex;
     }
 
-    public abstract void GetDamage(int damage);
+    private void DestroyEnemy()
+    {
+        if (health < minHealth)
+        {
+            Destroy(gameObject);
+        }
+    }
 
+    protected abstract void InitializeValues();
     protected abstract void AttackPlayer(Collision2D collision2D);
 }
