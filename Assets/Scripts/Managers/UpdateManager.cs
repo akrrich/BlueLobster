@@ -15,9 +15,4 @@ public class UpdateManager
             GameManager.Instance.OnGameStatePlayingFixedUpdate?.Invoke();
         }
     }
-
-    public void OnCollisionStay2DAllGame()
-    {
-
-    }
 }

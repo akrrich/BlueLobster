@@ -6,6 +6,7 @@ public class Props : MonoBehaviour
 
     private Rigidbody2D rb;
     private SpriteRenderer shadow;
+    private AudioSource throwSound; // sonido de prueba para testear
 
     [SerializeField] private int damage;
     [SerializeField] private int velocity;
@@ -53,6 +54,7 @@ public class Props : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         shadow = transform.Find("Shadow").GetComponent<SpriteRenderer>();
+        throwSound = GetComponent<AudioSource>();
     }
 
     private void InitializeReferences()
@@ -114,6 +116,8 @@ public class Props : MonoBehaviour
 
     public void ThrowObject()
     {
+        throwSound.Play();
+
         rb.isKinematic = false;
         rb.simulated = true;
         transform.SetParent(null);
