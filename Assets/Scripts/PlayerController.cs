@@ -5,8 +5,15 @@ public class PlayerController : MonoBehaviour
     private Props currentProp;
 
     private Rigidbody2D rb;
-    private Transform propPosition;
+    private Transform propPositionHeavy;
+    private Transform propPositionLight;
     private Animator anim;
+
+    private GameObject rightHand;
+    private GameObject leftHand;
+
+    private Animator rightHandAnim;
+    private Animator leftHandAnim;
 
     private int radius = 1;
     
@@ -17,7 +24,6 @@ public class PlayerController : MonoBehaviour
     private float speed = 8;
 
     [SerializeField] private LayerMask detectionLayer;
-
 
     void Awake()
     {
@@ -54,8 +60,16 @@ public class PlayerController : MonoBehaviour
     private void GetComponents()
     {
         rb = GetComponent<Rigidbody2D>();
-        propPosition = transform.Find("PropPosition").GetComponent<Transform>();
+        propPositionHeavy = transform.Find("PropPositionHeavy").GetComponent<Transform>();
+        propPositionLight = transform.Find("PropPositionLight").GetComponent<Transform>();
+
         anim = GetComponent<Animator>();
+
+        rightHand = transform.Find("Right hand")?.gameObject;
+        leftHand = transform.Find("Left hand")?.gameObject;
+
+        if (rightHand != null) rightHandAnim = rightHand.GetComponent<Animator>();
+        if (leftHand != null) leftHandAnim = leftHand.GetComponent<Animator>();
     }
 
     private void SubscribeToGameManagerEvents()
@@ -92,7 +106,6 @@ public class PlayerController : MonoBehaviour
 
                else if (rb.velocity.y < 0) UPDOWNdirection = -1;
 
-                
             }
         }
     }
@@ -105,7 +118,8 @@ public class PlayerController : MonoBehaviour
 
             if (currentProp != null)
             {
-                currentProp.PickObject(propPosition);
+                currentProp.PickObject(propPositionLight, propPositionHeavy);
+
             }
         }
     }
@@ -128,11 +142,18 @@ public class PlayerController : MonoBehaviour
         {
             anim.SetBool("Running", true);
             anim.SetBool("Idle", false);
+            leftHandAnim.SetBool("Running", true);
+            rightHandAnim.SetBool("Running", true);
+
         }
         else
         {
             anim.SetBool("Running", false);
             anim.SetBool("Idle", true);
+            leftHandAnim.SetBool("Running", false);
+            rightHandAnim.SetBool("Running", false);
         }
+
+        
     }
 }

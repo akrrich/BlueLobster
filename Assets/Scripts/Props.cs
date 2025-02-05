@@ -14,6 +14,7 @@ public class Props : MonoBehaviour
     [SerializeField] private int damage;
     [SerializeField] private int velocity;
     [SerializeField] private int durability;
+    [SerializeField] public int weight;
 
     private bool hasBeenThrown = false;
 
@@ -106,14 +107,18 @@ public class Props : MonoBehaviour
         }
     }
 
-    public void PickObject(Transform objectPosition)
+    public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
     {
         rb.isKinematic = true;
         rb.simulated = false;
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
 
-        transform.position = objectPosition.position;
+        if (weight == 1)
+        {
+            transform.position = objectPositionHeavy.position;
+        }
+        else if (weight == 0) transform.position = objectPositionLight.position;
         transform.SetParent(playerController.transform);
     }
 
