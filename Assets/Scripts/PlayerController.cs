@@ -6,11 +6,13 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Transform propPosition;
+    private Animator anim;
 
     private int radius = 1;
     
     private float XAxis;
     private float YAxis;
+    private int UPDOWNdirection = 0;
 
     private float speed = 8;
 
@@ -28,6 +30,7 @@ public class PlayerController : MonoBehaviour
     {
         PickUp();
         Throw();
+        animations();
     }
 
     // Simulacion de FixedUpdate
@@ -52,6 +55,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         propPosition = transform.Find("PropPosition").GetComponent<Transform>();
+        anim = GetComponent<Animator>();
     }
 
     private void SubscribeToGameManagerEvents()
@@ -76,17 +80,19 @@ public class PlayerController : MonoBehaviour
 
         if (rb.velocity.x != 0 && rb.velocity.y == 0)
         {
-            transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
             transform.localScale = new Vector2(XAxis, transform.localScale.y);
+            UPDOWNdirection = 0;
         }
 
         else
         {
             if (rb.velocity.y != 0)
             {
-                float angle = (YAxis > 0) ? 90f : -90f; // 90° arriba, -90° abajo
-                transform.rotation = Quaternion.Euler(0f, 0f, angle);
-                transform.localScale = new Vector2(1, 1);
+               if (rb.velocity.y > 0) UPDOWNdirection = 1;
+
+               else if (rb.velocity.y < 0) UPDOWNdirection = -1;
+
+                
             }
         }
     }
@@ -110,9 +116,23 @@ public class PlayerController : MonoBehaviour
         {
             if (currentProp != null)
             {
-                currentProp.ThrowObject();
+                currentProp.ThrowObject(UPDOWNdirection);
                 currentProp = null;
             }
+        }
+    }
+
+    private void animations()
+    {
+        if(rb.velocity.x != 0 || rb.velocity.y != 0)
+        {
+            anim.SetBool("Running", true);
+            anim.SetBool("Idle", false);
+        }
+        else
+        {
+            anim.SetBool("Running", false);
+            anim.SetBool("Idle", true);
         }
     }
 }
