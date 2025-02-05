@@ -2,10 +2,11 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
-    [SerializeField] protected PlayerController playerController;
+    protected PlayerController playerController;
     [SerializeField] private Transform[] patrolPoints;
 
-    private Rigidbody2D rb;
+    protected Rigidbody2D rb;
+    protected BoxCollider2D boxCollider;
     private Animator anim;
 
     private int currentPointIndex = 0;
@@ -16,7 +17,10 @@ public abstract class Enemy : MonoBehaviour
     protected float speed;
     protected float radius;
 
-    private Vector2 currentTarget;
+    protected bool executeAttackInUpdate;
+    protected bool canMove = true;
+
+    protected Vector2 currentTarget;
 
 
     void Awake()
@@ -29,16 +33,23 @@ public abstract class Enemy : MonoBehaviour
     {
         CheckEnemyStates();
         DestroyEnemy();
+        CheckWhereCanExecuteTheAttack(executeAttackInUpdate, null);
     }
 
-    void OnTriggerEnter2D(Collider2D collider2D)
+    protected virtual void OnTriggerEnter2D(Collider2D collider2D)
     {
         CheckColisionWithPatrolPoints(collider2D);
     }
 
     void OnCollisionEnter2D(Collision2D collision2D)
     {
-        AttackPlayer(collision2D);
+        CheckWhereCanExecuteTheAttack(executeAttackInUpdate, collision2D);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 
 
@@ -50,24 +61,30 @@ public abstract class Enemy : MonoBehaviour
 
     private void GetComponents()
     {
+        playerController = FindObjectOfType<PlayerController>();
+
         rb = GetComponent<Rigidbody2D>();
+        boxCollider = GetComponent<BoxCollider2D>();    
         anim = GetComponent<Animator>();
     }
 
     private void CheckEnemyStates()
     {
-        if (IsPlayerInRangeWithRadius())
+        if (canMove)
         {
-            FollowPlayer();
-        }
+            if (IsPlayerInRangeWithRadius())
+            {
+                FollowPlayer();
+            }
 
-        else
-        {
-            Patrol();
+            else
+            {
+                Patrol();
+            }
         }
     }
 
-    private bool IsPlayerInRangeWithRadius()
+    protected bool IsPlayerInRangeWithRadius()
     {
         if (playerController != null)
         {
@@ -125,6 +142,19 @@ public abstract class Enemy : MonoBehaviour
         if (health < minHealth)
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void CheckWhereCanExecuteTheAttack(bool executeAttackInUpdate, Collision2D collision2D)
+    {
+        if (executeAttackInUpdate)
+        {
+            AttackPlayer(null);
+        }
+
+        else
+        {
+            AttackPlayer(collision2D);
         }
     }
 
