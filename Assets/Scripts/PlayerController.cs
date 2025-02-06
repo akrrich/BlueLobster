@@ -120,6 +120,23 @@ public class PlayerController : MonoBehaviour
             {
                 currentProp.PickObject(propPositionLight, propPositionHeavy);
 
+                if (currentProp.weight == 1)
+                {
+                    rightHandAnim.SetBool("Holding_heavy", true);
+                    leftHandAnim.SetBool("Holding_heavy", true);
+                }
+                else
+                {
+                    rightHandAnim.SetBool("Holding_light", true);
+                    leftHandAnim.SetBool("Holding_light", true);
+                }
+
+                rightHandAnim.SetBool("Running", false);
+                leftHandAnim.SetBool("Running", false);
+
+                rightHandAnim.SetBool("Idle", false);
+                leftHandAnim.SetBool("Idle", false);
+
             }
         }
     }
@@ -131,6 +148,13 @@ public class PlayerController : MonoBehaviour
             if (currentProp != null)
             {
                 currentProp.ThrowObject(UPDOWNdirection);
+
+
+                rightHandAnim.SetBool("Holding_heavy", false);  
+                leftHandAnim.SetBool("Holding_heavy", false);
+                rightHandAnim.SetBool("Holding_light", false);
+                leftHandAnim.SetBool("Holding_light", false);
+
                 currentProp = null;
             }
         }
@@ -142,14 +166,28 @@ public class PlayerController : MonoBehaviour
         {
             anim.SetBool("Running", true);
             anim.SetBool("Idle", false);
-            leftHandAnim.SetBool("Running", true);
-            rightHandAnim.SetBool("Running", true);
+
+            if (currentProp == null)
+            {
+                leftHandAnim.SetBool("Running", true);
+                rightHandAnim.SetBool("Running", true);
+            }
+
+            leftHandAnim.SetBool("Idle", false);
+            rightHandAnim.SetBool("Idle", false);
 
         }
         else
         {
             anim.SetBool("Running", false);
             anim.SetBool("Idle", true);
+
+            if (currentProp == null)
+            {
+                leftHandAnim.SetBool("Idle", true);
+                rightHandAnim.SetBool("Idle", true);
+            }
+
             leftHandAnim.SetBool("Running", false);
             rightHandAnim.SetBool("Running", false);
         }
