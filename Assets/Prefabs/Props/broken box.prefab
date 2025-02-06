@@ -102,10 +102,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e56676ecff73c6d48a2339196b736e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alert: {fileID: 5337216795763662750}
   damage: 2
   velocity: 15
   durability: 0
+  weight: 0
 --- !u!61 &8865869425073183282
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -159,7 +159,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3076146580033334727}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -187,9 +187,9 @@ AudioSource:
   m_GameObject: {fileID: 3076146580033334727}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  OutputAudioMixerGroup: {fileID: 1163208751445046537, guid: a2d75519022e5c1488bc20c5f56ea170, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 46e5a474e1cff1747b98f98c9588b355, type: 3}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

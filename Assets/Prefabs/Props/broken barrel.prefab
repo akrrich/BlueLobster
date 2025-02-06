@@ -183,9 +183,9 @@ AudioSource:
   m_GameObject: {fileID: 8737101274331269820}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  OutputAudioMixerGroup: {fileID: 1163208751445046537, guid: a2d75519022e5c1488bc20c5f56ea170, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 46e5a474e1cff1747b98f98c9588b355, type: 3}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -323,7 +323,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8737101274331269820}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -354,10 +354,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e56676ecff73c6d48a2339196b736e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alert: {fileID: 1368433133118323496}
   damage: 2
   velocity: 15
   durability: 0
+  weight: 0
 --- !u!95 &4983642441381352932
 Animator:
   serializedVersion: 5

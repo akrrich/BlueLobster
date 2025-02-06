@@ -5,24 +5,23 @@ public class Props : MonoBehaviour
     private PlayerController playerController;
 
     private Rigidbody2D rb;
+    private AudioSource throwSound;
     private Animator anim;
-    
-    [SerializeField] private GameObject alert;
-
-    private AudioSource throwSound; // sonido de prueba para testear
+    private SpriteRenderer alert;
 
     [SerializeField] private int damage;
     [SerializeField] private int velocity;
     [SerializeField] private int durability;
-    [SerializeField] public int weight;
+    [SerializeField] private int weight;
 
     private bool hasBeenThrown = false;
+
+    public int Weight { get => weight; }
 
 
     void Awake()
     {
         GetComponents();
-        InitializeReferences();
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -43,14 +42,58 @@ public class Props : MonoBehaviour
 
                 if (currentProp != null)
                 {
-                    currentProp.alert.SetActive(false);
+                    currentProp.alert.gameObject.SetActive(false);
                     return currentProp;
                 }
-                
             }
         }
 
         return null;
+    }
+
+    public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
+    {
+        rb.isKinematic = true;
+        rb.simulated = false;
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        if (weight == 1)
+        {
+            transform.position = objectPositionHeavy.position;
+        }
+
+        else if (weight == 0) transform.position = objectPositionLight.position;
+        transform.SetParent(playerController.transform);
+    }
+
+    public void ThrowObject(int direction)
+    {
+        throwSound.Play();
+
+        rb.isKinematic = false;
+        rb.simulated = true;
+        transform.SetParent(null);
+
+        Vector2 throwDirection = Vector2.zero;
+
+        switch (direction)
+        {
+            case 0:
+                if (playerController.transform.localScale.x == 1) throwDirection = Vector2.right;
+                else if (playerController.transform.localScale.x == -1) throwDirection = Vector2.left;
+                break;
+            case 1:
+                throwDirection = Vector2.up;
+                break;
+            case -1:
+                throwDirection = Vector2.down;
+                break;
+        }
+
+        rb.AddForce(throwDirection * velocity, ForceMode2D.Impulse);
+        hasBeenThrown = true;
+        Animations();
     }
 
 
@@ -61,12 +104,7 @@ public class Props : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         throwSound = GetComponent<AudioSource>();
         anim = GetComponent<Animator>();
-    }
-
-    private void InitializeReferences()
-    {
-        rb.isKinematic = true;
-        
+        alert = transform.Find("Alert").GetComponent<SpriteRenderer>();
     }
 
     private void HandleCollisions(Collision2D collision)
@@ -107,56 +145,9 @@ public class Props : MonoBehaviour
         }
     }
 
-    public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
-    {
-        rb.isKinematic = true;
-        rb.simulated = false;
-        rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-
-        if (weight == 1)
-        {
-            transform.position = objectPositionHeavy.position;
-        }
-        else if (weight == 0) transform.position = objectPositionLight.position;
-        transform.SetParent(playerController.transform);
-    }
-
-    public void ThrowObject(int direction)
-    {
-        throwSound.Play();
-
-        rb.isKinematic = false;
-        rb.simulated = true;
-        transform.SetParent(null);
-
-        Vector2 throwDirection = Vector2.zero;
-
-        
-
-        switch (direction)
-        {
-            case 0:
-                if (playerController.transform.localScale.x == 1) throwDirection = Vector2.right;
-                else if (playerController.transform.localScale.x == -1) throwDirection = Vector2.left;
-                break;
-            case 1:
-                throwDirection = Vector2.up;
-                break;
-            case -1:
-                throwDirection = Vector2.down;
-                break;
-        }
-
-        rb.AddForce(throwDirection * velocity, ForceMode2D.Impulse);
-        hasBeenThrown = true;
-        Animations();
-
-    }
-
     private void Animations()
     {
-        if(hasBeenThrown == true)
+        if (hasBeenThrown)
         {
             anim.SetBool("Throw", true);
         }

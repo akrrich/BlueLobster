@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class EnemyMelee : Enemy
 {
-    private int damageCooldownTime = 3;
+    private int damageCooldownTime = 2;
 
     private bool isCollidingWithPlayer = false;
 
@@ -34,7 +34,7 @@ public class EnemyMelee : Enemy
         if (collision2D.gameObject.CompareTag("Player"))
         {
             StartCoroutine(DamageCooldown());
-        }
+        }   
     }
 
 

@@ -33,7 +33,7 @@ public abstract class Enemy : MonoBehaviour
     {
         CheckEnemyStates();
         DestroyEnemy();
-        CheckWhereCanExecuteTheAttack(executeAttackInUpdate, null);
+        CheckWhereCanExecuteTheAttack(null);
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collider2D)
@@ -43,7 +43,7 @@ public abstract class Enemy : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision2D)
     {
-        CheckWhereCanExecuteTheAttack(executeAttackInUpdate, collision2D);
+        CheckWhereCanExecuteTheAttack(collision2D);
     }
 
     void OnDrawGizmosSelected()
@@ -145,16 +145,16 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    private void CheckWhereCanExecuteTheAttack(bool executeAttackInUpdate, Collision2D collision2D)
+    private void CheckWhereCanExecuteTheAttack(Collision2D collision2D)
     {
+        if (!executeAttackInUpdate && collision2D != null)
+        {
+            AttackPlayer(collision2D);
+        }
+
         if (executeAttackInUpdate)
         {
             AttackPlayer(null);
-        }
-
-        else
-        {
-            AttackPlayer(collision2D);
         }
     }
 
