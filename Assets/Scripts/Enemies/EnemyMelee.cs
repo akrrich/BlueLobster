@@ -3,27 +3,31 @@ using UnityEngine;
 
 public class EnemyMelee : Enemy
 {
-    private int damageCooldownTime = 1;
+    private int damageCooldownTime = 3;
 
     private bool isCollidingWithPlayer = false;
 
 
     void OnCollisionStay2D(Collision2D collision2D)
     {
-        if (collision2D.gameObject.CompareTag("Player"))
-        {
-            isCollidingWithPlayer = true;
-        }
+        CheckStayColisionWithPlayer(collision2D);
     }
 
     void OnCollisionExit2D(Collision2D collision2D)
     {
-        if (collision2D.gameObject.CompareTag("Player"))
-        {
-            isCollidingWithPlayer = false;
-        }
+        CheckExitColisionWithPlayer(collision2D);
     }
 
+
+    protected override void InitializeValues()
+    {
+        health = 1;
+        damage = 1;
+        speed = 2f;
+        radius = 3f;
+
+        executeAttackInUpdate = false;
+    }
 
     protected override void AttackPlayer(Collision2D collision2D)
     {
@@ -33,14 +37,6 @@ public class EnemyMelee : Enemy
         }
     }
 
-    protected override void InitializeValues()
-    {
-        health = 1;
-        damage = 1;
-        speed = 2f;
-        radius = 3f;
-    }
-
 
     private IEnumerator DamageCooldown()
     {
@@ -48,7 +44,23 @@ public class EnemyMelee : Enemy
         
         if (isCollidingWithPlayer)
         {
-            Destroy(playerController.gameObject);
+            playerController.GetDamage(damage);
+        }
+    }
+
+    private void CheckStayColisionWithPlayer(Collision2D collision2D)
+    {
+        if (collision2D.gameObject.CompareTag("Player"))
+        {
+            isCollidingWithPlayer = true;
+        }
+    }
+
+    private void CheckExitColisionWithPlayer(Collision2D collision2D)
+    {
+        if (collision2D.gameObject.CompareTag("Player"))
+        {
+            isCollidingWithPlayer = false;
         }
     }
 }

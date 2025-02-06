@@ -15,7 +15,8 @@ public class PlayerController : MonoBehaviour
     private Animator rightHandAnim;
     private Animator leftHandAnim;
 
-    private int radius = 1;
+    private float radius = 1f;
+    private int health = 3;
     
     private float XAxis;
     private float YAxis;
@@ -54,6 +55,12 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, radius);
+    }
+
+
+    public void GetDamage(int damage)
+    {
+        health -= damage;
     }
 
 
