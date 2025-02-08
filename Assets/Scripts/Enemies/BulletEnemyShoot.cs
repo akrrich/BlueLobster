@@ -9,7 +9,7 @@ public class BulletEnemyShoot : MonoBehaviour
 
     private int damage = 2;
 
-    private float speed = 5f;
+    private float speed = 15f;
 
 
     void Awake()

@@ -29,7 +29,7 @@ public class EnemyShoot : Enemy
             counterForShoot += Time.deltaTime;
             float timeToShoot = 2f;
 
-            if (counterForShoot >= timeToShoot)
+            if (counterForShoot >= timeToShoot && health >= minHealth)
             {
                 BulletEnemyShoot bullet = bulletEnemyShootPool.GetObjectFromPool<BulletEnemyShoot>();
                 bullet.BulletActive(bulletEnemyShootPool, transform);

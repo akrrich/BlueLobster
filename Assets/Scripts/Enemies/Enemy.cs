@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public abstract class Enemy : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public abstract class Enemy : MonoBehaviour
 
     private int currentPointIndex = 0;
     protected int health;
-    private int minHealth = 1;
+    protected int minHealth = 1;
     protected int damage;
 
     protected float speed;
@@ -34,6 +35,7 @@ public abstract class Enemy : MonoBehaviour
         CheckEnemyStates();
         DestroyEnemy();
         CheckWhereCanExecuteTheAttack(null);
+        animations();
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collider2D)
@@ -115,13 +117,13 @@ public abstract class Enemy : MonoBehaviour
     private void Patrol()
     {
         currentTarget = patrolPoints[currentPointIndex].position;
-        MoveEnemyToTarget(currentTarget);
+        if (health >= minHealth) MoveEnemyToTarget(currentTarget);
     }
 
     private void FollowPlayer()
     {
         currentTarget = playerController.transform.position;
-        MoveEnemyToTarget(currentTarget);
+        if (health >= minHealth) MoveEnemyToTarget(currentTarget);
     }
 
     private int ChangeRandomPatrolPoint()
@@ -141,7 +143,8 @@ public abstract class Enemy : MonoBehaviour
     {
         if (health < minHealth)
         {
-            Destroy(gameObject);
+            StartCoroutine(DeathAnimation());
+            
         }
     }
 
@@ -158,6 +161,37 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
+    private void animations()
+    {
+        if (health >= minHealth)
+        {
+            if (canMove == true && rb.velocity.x > 0 || rb.velocity.y > 0)
+            {
+                anim.SetBool("Running", true);
+                anim.SetBool("Idle", false);
+            }
+            else if (canMove == false)
+            {
+                anim.SetBool("Running", false);
+                anim.SetBool("Idle", true);
+            }
+        }
+
+        else
+        {
+            anim.SetBool("Running", false);
+            anim.SetBool("Idle", false);
+        }
+    }
+
     protected abstract void InitializeValues();
     protected abstract void AttackPlayer(Collision2D collision2D);
+
+    IEnumerator DeathAnimation()
+    {
+        anim.SetBool("Dead", true);
+        yield return new WaitForSeconds(3f);
+        Destroy(gameObject);
+    }
+    
 }
