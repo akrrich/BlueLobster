@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PauseManager : MonoBehaviour
 {
@@ -17,6 +17,12 @@ public class PauseManager : MonoBehaviour
     void Awake()
     {
         GetComponents();
+        SubscribeToFinalScreenEvents();
+    }
+
+    void OnDestroy()
+    {
+        UnSubscribeToFinalSccreenEvents();
     }
 
 
@@ -69,6 +75,16 @@ public class PauseManager : MonoBehaviour
         buttonClick = GetComponent<AudioSource>();
     }
 
+    private void SubscribeToFinalScreenEvents()
+    {
+        FinalScreens.OnPauseButtonDisabled += DisabledPauseButton;
+    }
+
+    private void UnSubscribeToFinalSccreenEvents()
+    {
+        FinalScreens.OnPauseButtonDisabled -= DisabledPauseButton;
+    }
+
     private IEnumerator LoadSceneAfterButtonClick()
     {
         buttonClick.Play();
@@ -87,5 +103,10 @@ public class PauseManager : MonoBehaviour
         yield return new WaitForSeconds(buttonClick.clip.length);
 
         Application.Quit();
+    }
+
+    private void DisabledPauseButton()
+    {
+        buttonPause.gameObject.SetActive(false);
     }
 }

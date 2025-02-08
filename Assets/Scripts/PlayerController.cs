@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask detectionLayer;
 
     private int health = 3;
+    private int minHealth = 1;
     private int UPDOWNdirection = 0;
 
     private float radius = 1f;
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour
         PickUp();
         Throw();
         Animations();
+        CheckIfPlayerIsAlive();
     }
 
     // Simulacion de FixedUpdate
@@ -143,19 +145,37 @@ public class PlayerController : MonoBehaviour
         bool isHoldingHeavy = currentProp != null && currentProp.Weight == 1;
         bool isHoldingLight = currentProp != null && currentProp.Weight == 0;
 
-        anim.SetBool("Running", isMoving);
-        anim.SetBool("Idle", !isMoving);
+        if (health >= minHealth)
+        {
+            anim.SetBool("Running", isMoving);
+            anim.SetBool("Idle", !isMoving);
 
-        rightHandAnim.SetBool("Running", isMoving && currentProp == null);
-        leftHandAnim.SetBool("Running", isMoving && currentProp == null);
+            rightHandAnim.SetBool("Running", isMoving && currentProp == null);
+            leftHandAnim.SetBool("Running", isMoving && currentProp == null);
 
-        rightHandAnim.SetBool("Idle", !isMoving && currentProp == null);
-        leftHandAnim.SetBool("Idle", !isMoving && currentProp == null);
+            rightHandAnim.SetBool("Idle", !isMoving && currentProp == null);
+            leftHandAnim.SetBool("Idle", !isMoving && currentProp == null);
 
-        rightHandAnim.SetBool("Holding_heavy", isHoldingHeavy);
-        leftHandAnim.SetBool("Holding_heavy", isHoldingHeavy);
+            rightHandAnim.SetBool("Holding_heavy", isHoldingHeavy);
+            leftHandAnim.SetBool("Holding_heavy", isHoldingHeavy);
 
-        rightHandAnim.SetBool("Holding_light", isHoldingLight);
-        leftHandAnim.SetBool("Holding_light", isHoldingLight);
+            rightHandAnim.SetBool("Holding_light", isHoldingLight);
+            leftHandAnim.SetBool("Holding_light", isHoldingLight);
+        }
+
+        else
+        {
+            // animacion de muerte
+        }
+    }
+
+    private void CheckIfPlayerIsAlive()
+    {
+        if (health < minHealth)
+        {
+            PlayerEvents.OnPlayerDefeated?.Invoke();
+
+            gameObject.SetActive(false);
+        }
     }
 }
