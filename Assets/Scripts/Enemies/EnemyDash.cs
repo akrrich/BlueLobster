@@ -40,7 +40,6 @@ public class EnemyDash : Enemy
     {
         if (IsPlayerInRangeWithRadius() && !isDashing)
         {
-            canMove = false;
             rb.velocity = Vector2.zero;
             boxCollider.isTrigger = true;
             isDashing = true;
@@ -51,6 +50,8 @@ public class EnemyDash : Enemy
 
         if (isDashing)
         {
+            rb.velocity = Vector2.zero;
+
             counterForDash += Time.deltaTime;
             float timeToDash = 0.25f;
 
@@ -74,16 +75,15 @@ public class EnemyDash : Enemy
     {
         float duration = 0.5f;
         float timeElapsed = 0f;
-        float friccion = 0.9f;
+        float friction = 0.9f;
 
         while (timeElapsed < duration)
         {
-            rb.velocity *= friccion; 
+            rb.velocity *= friction; 
             timeElapsed += Time.deltaTime;
             yield return null;
         }
 
-        canMove = true;
         isDashing = false;
         boxCollider.isTrigger = false;
     }

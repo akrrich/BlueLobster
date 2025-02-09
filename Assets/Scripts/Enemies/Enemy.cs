@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public abstract class Enemy : MonoBehaviour
 {
@@ -9,6 +8,7 @@ public abstract class Enemy : MonoBehaviour
     protected Rigidbody2D rb;
     protected BoxCollider2D boxCollider;
     private Animator anim;
+    private SpriteRenderer spriteRenderer;
 
     private int currentPointIndex = 0;
     protected int health;
@@ -19,7 +19,6 @@ public abstract class Enemy : MonoBehaviour
     protected float radius;
 
     protected bool executeAttackInUpdate;
-    protected bool canMove = true;
 
     protected Vector2 currentTarget;
 
@@ -35,7 +34,7 @@ public abstract class Enemy : MonoBehaviour
         CheckEnemyStates();
         DestroyEnemy();
         CheckWhereCanExecuteTheAttack(null);
-        animations();
+        Animations();
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collider2D)
@@ -46,12 +45,6 @@ public abstract class Enemy : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision2D)
     {
         CheckWhereCanExecuteTheAttack(collision2D);
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, radius);
     }
 
 
@@ -68,22 +61,20 @@ public abstract class Enemy : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();    
         anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void CheckEnemyStates()
     {
-        if (canMove)
+        if (IsPlayerInRangeWithRadius())
         {
-            if (IsPlayerInRangeWithRadius())
-            {
-                FollowPlayer();
-            }
-
-            else
-            {
-                Patrol();
-            }
+            FollowPlayer();
         }
+
+        else
+        {
+            Patrol();
+        }   
     }
 
     protected bool IsPlayerInRangeWithRadius()
@@ -104,6 +95,21 @@ public abstract class Enemy : MonoBehaviour
     {
         Vector2 direction = (target - (Vector2)transform.position).normalized;
         rb.velocity = direction * speed;
+
+        RotateEnemyDirection(direction);
+    }
+
+    protected void RotateEnemyDirection(Vector2 direction)
+    {
+        if (direction.x > 0)
+        {
+            spriteRenderer.flipX = false;
+        }
+
+        if (direction.x < 0)
+        {
+            spriteRenderer.flipX = true;
+        }
     }
 
     private void CheckColisionWithPatrolPoints(Collider2D collider2D)
@@ -142,9 +148,8 @@ public abstract class Enemy : MonoBehaviour
     private void DestroyEnemy()
     {
         if (health < minHealth)
-        {
-            StartCoroutine(DeathAnimation());
-            
+        {     
+            Destroy(gameObject, 3f);
         }
     }
 
@@ -161,36 +166,17 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    private void animations()
+    private void Animations()
     {
-        if (health >= minHealth)
-        {
-            if (canMove == true && rb.velocity.x > 0 || rb.velocity.y > 0)
-            {
-                anim.SetBool("Running", true);
-                anim.SetBool("Idle", false);
-            }
-            else if (canMove == false)
-            {
-                anim.SetBool("Running", false);
-                anim.SetBool("Idle", true);
-            }
-        }
+        bool isMoving = rb.velocity.sqrMagnitude > 0;
+        bool isAlive = health >= minHealth;
 
-        else
-        {
-            anim.SetBool("Running", false);
-            anim.SetBool("Idle", false);
-        }
+        anim.SetBool("Running", isMoving && isAlive);
+        anim.SetBool("Idle", !isMoving && isAlive);
+
+        anim.SetBool("Dead", !isAlive);
     }
 
     protected abstract void InitializeValues();
     protected abstract void AttackPlayer(Collision2D collision2D);
-
-    IEnumerator DeathAnimation()
-    {
-        anim.SetBool("Dead", true);
-        yield return new WaitForSeconds(3f);
-        Destroy(gameObject);
-    }
 }

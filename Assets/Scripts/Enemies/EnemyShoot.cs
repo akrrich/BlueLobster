@@ -23,7 +23,6 @@ public class EnemyShoot : Enemy
     {
         if (IsPlayerInRangeWithRadius())
         {
-            canMove = false;
             rb.velocity = Vector2.zero;
 
             counterForShoot += Time.deltaTime;
@@ -37,11 +36,6 @@ public class EnemyShoot : Enemy
                 counterForShoot = 0f;
                 timeToShoot = 0f;
             }
-        }
-
-        else
-        {
-            canMove = true;
         }
     }
 }

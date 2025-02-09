@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class EnemyMelee : Enemy
 {
+    // aca tendria que ir el tiempo que tarda el enemigo en realizar la animacion de ataque
     private int damageCooldownTime = 2;
 
     private bool isCollidingWithPlayer = false;

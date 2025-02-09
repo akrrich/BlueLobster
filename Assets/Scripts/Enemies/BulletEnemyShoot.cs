@@ -46,6 +46,7 @@ public class BulletEnemyShoot : MonoBehaviour
     {
         if (collider.gameObject.CompareTag("Player"))
         {
+            playerController.GetDamage(damage);
             bulletEnemyShootPool.ReturnObjectToPool(this);
         }
     }
