@@ -27,14 +27,26 @@ public abstract class Enemy : MonoBehaviour
     {
         GetComponents();
         InitializeValues();
+        SubscribeToGameManagerEvents();
     }
 
-    void Update()
+    // Simulacion de Update
+    void UpdateEnemy()
+    {
+        DestroyEnemy();
+        Animations();
+    }
+
+    // Simulacion de FixedUpdate
+    void FixedUpdateEnemy()
     {
         CheckEnemyStates();
-        DestroyEnemy();
         CheckWhereCanExecuteTheAttack(null);
-        Animations();
+    }
+
+    void OnDestroy()
+    {
+        UnsubscribeToGameManagerEvents();
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collider2D)
@@ -62,6 +74,18 @@ public abstract class Enemy : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();    
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void SubscribeToGameManagerEvents()
+    {
+        GameManager.Instance.OnGameStatePlaying += UpdateEnemy;
+        GameManager.Instance.OnGameStatePlayingFixedUpdate += FixedUpdateEnemy;
+    }
+
+    private void UnsubscribeToGameManagerEvents()
+    {
+        GameManager.Instance.OnGameStatePlaying -= UpdateEnemy;
+        GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdateEnemy;
     }
 
     private void CheckEnemyStates()
@@ -148,8 +172,8 @@ public abstract class Enemy : MonoBehaviour
     private void DestroyEnemy()
     {
         if (health < minHealth)
-        {     
-            Destroy(gameObject, 3f);
+        {
+            Destroy(gameObject, 3f);   
         }
     }
 

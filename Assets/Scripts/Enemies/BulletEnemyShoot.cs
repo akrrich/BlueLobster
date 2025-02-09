@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class BulletEnemyShoot : MonoBehaviour
 {
@@ -7,14 +8,20 @@ public class BulletEnemyShoot : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    private int damage = 2;
+    private int damage = 1;
 
     private float speed = 15f;
+    private float lifeTime = 5f;
 
 
     void Awake()
     {
         GetComponents();
+    }
+
+    void OnEnable()
+    {
+        StartCoroutine(ReturnBulletToPoolAfterLifeTime());
     }
 
     void OnTriggerEnter2D(Collider2D collider)
@@ -49,5 +56,12 @@ public class BulletEnemyShoot : MonoBehaviour
             playerController.GetDamage(damage);
             bulletEnemyShootPool.ReturnObjectToPool(this);
         }
+    }
+
+    private IEnumerator ReturnBulletToPoolAfterLifeTime()
+    {
+        yield return new WaitForSeconds(lifeTime);
+
+        bulletEnemyShootPool.ReturnObjectToPool(this);
     }
 }

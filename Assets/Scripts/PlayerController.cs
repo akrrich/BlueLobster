@@ -19,9 +19,9 @@ public class PlayerController : MonoBehaviour
     private int minHealth = 1;
     private int UPDOWNdirection = 0;
 
-    private float radius = 1f;
     private float XAxis;
     private float YAxis;
+    private float radius = 1f;
     private float speed = 8;
 
 
@@ -175,6 +175,7 @@ public class PlayerController : MonoBehaviour
         {
             PlayerEvents.OnPlayerDefeated?.Invoke();
 
+            // aca habria que poner la animacion de muerte del player
             gameObject.SetActive(false);
         }
     }

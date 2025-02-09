@@ -147,9 +147,6 @@ public class Props : MonoBehaviour
 
     private void Animations()
     {
-        if (hasBeenThrown)
-        {
-            anim.SetBool("Throw", true);
-        }
+        anim.SetBool("Throw", hasBeenThrown);   
     }
 }

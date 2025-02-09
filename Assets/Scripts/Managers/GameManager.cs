@@ -33,18 +33,12 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (gameState == GameState.Playing)
-        {
-            updateManager.UpdateAllGame();
-        }
+        UpdateGame();
     }
 
     void FixedUpdate()
     {
-        if (gameState == GameState.Playing)
-        {
-            updateManager.FixedUpdateAllGame();
-        }
+        FixedUpdateGame();
     }
 
 
@@ -74,5 +68,21 @@ public class GameManager : MonoBehaviour
     {
         gameState = GameState.Menu;
         updateManager = new UpdateManager();
+    }
+
+    private void UpdateGame()
+    {
+        if (gameState == GameState.Playing)
+        {
+            updateManager.UpdateAllGame();
+        }
+    }
+
+    private void FixedUpdateGame()
+    {
+        if (gameState == GameState.Playing)
+        {
+            updateManager.FixedUpdateAllGame();
+        }
     }
 }

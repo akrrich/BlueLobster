@@ -37,7 +37,8 @@ public class ObjectPooler : MonoBehaviour
 
         else
         {
-            return null;
+            GameObject newObj = Instantiate(prefab, transform);
+            return newObj.GetComponent<T>();
         }
     }
 
