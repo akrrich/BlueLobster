@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public abstract class Enemy : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public abstract class Enemy : MonoBehaviour
 
     protected float speed;
     protected float radius;
+    private float timeToChangePropMode = 0.5f;
 
     protected bool executeAttackInUpdate;
 
@@ -65,7 +67,7 @@ public abstract class Enemy : MonoBehaviour
 
         if (health < minHealth)
         {
-            ConvertToThrowable();
+            ConvertToPropMode();
         }
     }
 
@@ -197,11 +199,9 @@ public abstract class Enemy : MonoBehaviour
         anim.SetBool("Dead", !isAlive);
     }
 
-    private void ConvertToThrowable()
+    private void ConvertToPropMode()
     {
         UnsubscribeToGameManagerEvents();
-
-        Props props = gameObject.AddComponent<Props>();
 
         gameObject.tag = "Objeto";
 
@@ -209,11 +209,23 @@ public abstract class Enemy : MonoBehaviour
         rb.isKinematic = true;
         rb.simulated = true;
 
-        props.SetProperties(damage: 5, velocity: 10, durability: 1, weight: 1);
-
         anim.SetBool("Dead", true);
 
-        Destroy(this);
+        StartCoroutine(RemoveAndAddScript());
+    }
+
+    private IEnumerator RemoveAndAddScript()
+    {
+        yield return new WaitForSeconds(timeToChangePropMode);
+
+        Transform parent = transform.parent;
+        transform.SetParent(null);
+
+        Destroy(parent.gameObject);
+        Destroy(this); // esto dfestruye el script adjunto al gameObject
+
+        Props props = gameObject.AddComponent<Props>();
+        props.SetProperties(damage: 5, velocity: 10, durability: 1, weight: 1);
     }
 
     protected abstract void InitializeValues();

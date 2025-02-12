@@ -42,7 +42,10 @@ public class Props : MonoBehaviour
 
                 if (currentProp != null)
                 {
-                    //currentProp.alert.gameObject.SetActive(false);
+                    if (currentProp.alert != null)
+                    {
+                        currentProp.alert.gameObject.SetActive(false);
+                    }
                     return currentProp;
                 }
             }
@@ -77,7 +80,10 @@ public class Props : MonoBehaviour
 
     public void ThrowObject(int direction)
     {
-        //throwSound.Play();
+        if (throwSound != null)
+        {
+            throwSound.Play();
+        }
 
         rb.isKinematic = false;
         rb.simulated = true;
@@ -109,9 +115,9 @@ public class Props : MonoBehaviour
     {
         playerController = FindObjectOfType<PlayerController>();
 
-        rb = GetComponent<Rigidbody2D>() ?? gameObject.AddComponent<Rigidbody2D>();
-        throwSound = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>(); 
-        anim = GetComponent<Animator>() ?? gameObject.AddComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
+        throwSound = GetComponent<AudioSource>(); 
+        anim = GetComponent<Animator>();
         alert = transform.Find("Alert")?.GetComponent<SpriteRenderer>();
     }
 
