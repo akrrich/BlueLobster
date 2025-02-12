@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private LayerMask detectionLayer;
 
-    private int health = 3;
+    private int health = 100;
     private int minHealth = 1;
     private int UPDOWNdirection = 0;
 

@@ -18,6 +18,7 @@ public class EnemyDash : Enemy
         base.OnTriggerEnter2D(collider2D);
 
         CheckEnterColisionWithPlayer(collider2D);
+        CheckColisionWithScenary(collider2D);
     }
 
     void OnTriggerExit2D(Collider2D collider2D)
@@ -86,6 +87,14 @@ public class EnemyDash : Enemy
 
         isDashing = false;
         boxCollider.isTrigger = false;
+    }
+
+    private void CheckColisionWithScenary(Collider2D collider2D)
+    {
+        if (!collider2D.gameObject.CompareTag("Player"))
+        {
+            boxCollider.isTrigger = false;
+        }
     }
 
     private void CheckEnterColisionWithPlayer(Collider2D collider2D)

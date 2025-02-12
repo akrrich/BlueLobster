@@ -42,13 +42,21 @@ public class Props : MonoBehaviour
 
                 if (currentProp != null)
                 {
-                    currentProp.alert.gameObject.SetActive(false);
+                    //currentProp.alert.gameObject.SetActive(false);
                     return currentProp;
                 }
             }
         }
 
         return null;
+    }
+
+    public void SetProperties(int damage, int velocity, int durability, int weight)
+    {
+        this.damage = damage;
+        this.velocity = velocity;
+        this.durability = durability;
+        this.weight = weight;
     }
 
     public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
@@ -69,7 +77,7 @@ public class Props : MonoBehaviour
 
     public void ThrowObject(int direction)
     {
-        throwSound.Play();
+        //throwSound.Play();
 
         rb.isKinematic = false;
         rb.simulated = true;
@@ -101,10 +109,10 @@ public class Props : MonoBehaviour
     {
         playerController = FindObjectOfType<PlayerController>();
 
-        rb = GetComponent<Rigidbody2D>();
-        throwSound = GetComponent<AudioSource>();
-        anim = GetComponent<Animator>();
-        alert = transform.Find("Alert").GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>() ?? gameObject.AddComponent<Rigidbody2D>();
+        throwSound = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>(); 
+        anim = GetComponent<Animator>() ?? gameObject.AddComponent<Animator>();
+        alert = transform.Find("Alert")?.GetComponent<SpriteRenderer>();
     }
 
     private void HandleCollisions(Collision2D collision)
@@ -131,8 +139,8 @@ public class Props : MonoBehaviour
 
             if (currentEnemy != null)
             {
-                currentEnemy.GetDamage(damage);
                 Destroy(gameObject);
+                currentEnemy.GetDamage(damage);
             }
         }
     }

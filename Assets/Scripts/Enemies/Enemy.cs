@@ -33,7 +33,6 @@ public abstract class Enemy : MonoBehaviour
     // Simulacion de Update
     void UpdateEnemy()
     {
-        DestroyEnemy();
         Animations();
     }
 
@@ -63,6 +62,11 @@ public abstract class Enemy : MonoBehaviour
     public void GetDamage(int damage)
     {
         health -= damage;
+
+        if (health < minHealth)
+        {
+            ConvertToThrowable();
+        }
     }
 
 
@@ -169,14 +173,6 @@ public abstract class Enemy : MonoBehaviour
         return currentPointIndex = newPointIndex;
     }
 
-    private void DestroyEnemy()
-    {
-        if (health < minHealth)
-        {
-            Destroy(gameObject, 3f);   
-        }
-    }
-
     private void CheckWhereCanExecuteTheAttack(Collision2D collision2D)
     {
         if (!executeAttackInUpdate && collision2D != null)
@@ -199,6 +195,25 @@ public abstract class Enemy : MonoBehaviour
         anim.SetBool("Idle", !isMoving && isAlive);
 
         anim.SetBool("Dead", !isAlive);
+    }
+
+    private void ConvertToThrowable()
+    {
+        UnsubscribeToGameManagerEvents();
+
+        Props props = gameObject.AddComponent<Props>();
+
+        gameObject.tag = "Objeto";
+
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true;
+        rb.simulated = true;
+
+        props.SetProperties(damage: 5, velocity: 10, durability: 1, weight: 1);
+
+        anim.SetBool("Dead", true);
+
+        Destroy(this);
     }
 
     protected abstract void InitializeValues();
