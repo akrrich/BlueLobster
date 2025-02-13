@@ -8,13 +8,15 @@ public class Props : MonoBehaviour
     private AudioSource throwSound;
     private Animator anim;
     private SpriteRenderer alert;
+    private BoxCollider2D boxCollider;
 
     [SerializeField] private int damage;
-    [SerializeField] private int velocity;
+    [SerializeField] private float velocity;
     [SerializeField] private int durability;
     [SerializeField] private int weight;
 
     private bool hasBeenThrown = false;
+    private bool isHitting = false;
 
     public int Weight { get => weight; }
 
@@ -64,6 +66,7 @@ public class Props : MonoBehaviour
 
     public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
     {
+        boxCollider.isTrigger = false;
         rb.isKinematic = true;
         rb.simulated = false;
         rb.velocity = Vector2.zero;
@@ -110,6 +113,24 @@ public class Props : MonoBehaviour
         Animations();
     }
 
+    public void HitWithObject(Vector2 position, float radius, LayerMask detectionLayer)
+    {
+        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(position, radius, detectionLayer);
+
+        foreach (var obj in objectsInRange)
+        {
+            /* aca tendria que ir una corrutina que despues del tiempo
+            total de hacer la animacion de golpe si entra en el rango
+            se ejecute */
+
+            if (obj.CompareTag("Enemy"))
+            {
+                isHitting = true;
+                rb.simulated = true;
+            }
+        }
+    }
+
 
     private void GetComponents()
     {
@@ -118,6 +139,7 @@ public class Props : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         throwSound = GetComponent<AudioSource>(); 
         anim = GetComponent<Animator>();
+        boxCollider = GetComponent<BoxCollider2D>();
         alert = transform.Find("Alert")?.GetComponent<SpriteRenderer>();
     }
 
@@ -139,7 +161,7 @@ public class Props : MonoBehaviour
 
     private void CheckEnemyColision(Collision2D collision)
     {
-        if (hasBeenThrown && collision.collider.CompareTag("Enemy"))
+        if ((hasBeenThrown || isHitting) && collision.collider.CompareTag("Enemy"))
         {
             Enemy currentEnemy = collision.collider.GetComponent<Enemy>();
 
@@ -161,6 +183,6 @@ public class Props : MonoBehaviour
 
     private void Animations()
     {
-        anim.SetBool("Throw", hasBeenThrown);   
+        anim.SetBool("Throw", hasBeenThrown);
     }
 }

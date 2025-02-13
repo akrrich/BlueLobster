@@ -16,7 +16,7 @@ public class EnemyShoot : Enemy
         speed = 2.5f;
         radius = 8f;
 
-        executeAttackInUpdate = true;
+        canExecuteAttackInUpdate = true;
     }
 
     protected override void AttackPlayer(Collision2D collision2D)
@@ -37,5 +37,11 @@ public class EnemyShoot : Enemy
                 timeToShoot = 0f;
             }
         }
+    }
+
+    protected override void SetPropScriptAndProperties()
+    {
+        Props props = gameObject.AddComponent<Props>();
+        props.SetProperties(damage: 5, velocity: 10, durability: 1, weight: 1);
     }
 }

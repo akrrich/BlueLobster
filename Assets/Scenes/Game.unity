@@ -6745,7 +6745,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 629959702}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: d8157574eaf796946b43b957c560bcd3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -12926,6 +12926,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Table (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4556293549887180344, guid: f53cb2fcabca2054d953b48ac97b1b58, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5340482052819283679, guid: f53cb2fcabca2054d953b48ac97b1b58, type: 3}
       propertyPath: weight
       value: 1
@@ -13606,6 +13610,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Table
       objectReference: {fileID: 0}
+    - target: {fileID: 4556293549887180344, guid: f53cb2fcabca2054d953b48ac97b1b58, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5340482052819283679, guid: f53cb2fcabca2054d953b48ac97b1b58, type: 3}
       propertyPath: alert
       value: 
@@ -13724,6 +13732,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: broken box
       objectReference: {fileID: 0}
+    - target: {fileID: 3076146580033334727, guid: 5a837106c4f4a6f4198c4d1b1d4c0cbb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13782,9 +13794,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7472512004447927271, guid: 30372e70a035f304092e73e84474d209, type: 3}
+      propertyPath: m_BodyType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7472512004447927271, guid: 30372e70a035f304092e73e84474d209, type: 3}
+      propertyPath: m_Simulated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8737101274331269820, guid: 30372e70a035f304092e73e84474d209, type: 3}
       propertyPath: m_Name
       value: broken barrel
+      objectReference: {fileID: 0}
+    - target: {fileID: 8737101274331269820, guid: 30372e70a035f304092e73e84474d209, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13856,9 +13880,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: vase
       objectReference: {fileID: 0}
+    - target: {fileID: 4559031673504656241, guid: 70f1a44abe7bba5479a8ea3568d28fd8, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4902343871970045128, guid: 70f1a44abe7bba5479a8ea3568d28fd8, type: 3}
       propertyPath: m_Name
       value: Alert
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902343871970045128, guid: 70f1a44abe7bba5479a8ea3568d28fd8, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7344119193904654421, guid: 70f1a44abe7bba5479a8ea3568d28fd8, type: 3}
       propertyPath: alert

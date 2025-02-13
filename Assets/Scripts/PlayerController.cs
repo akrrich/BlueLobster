@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour
     {
         PickUp();
         Throw();
+        Hit();
         Animations();
         CheckIfPlayerIsAlive();
     }
@@ -134,6 +135,17 @@ public class PlayerController : MonoBehaviour
             {
                 currentProp.ThrowObject(UPDOWNdirection);
                 currentProp = null;
+            }
+        }
+    }
+
+    private void Hit()
+    {
+        if (currentProp != null && Input.GetKeyDown(KeyCode.X))
+        {
+            if (currentProp != null)
+            {
+                currentProp.HitWithObject(transform.position, radius, detectionLayer);
             }
         }
     }

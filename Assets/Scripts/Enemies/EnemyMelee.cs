@@ -26,7 +26,7 @@ public class EnemyMelee : Enemy
         speed = 2f;
         radius = 3f;
 
-        executeAttackInUpdate = false;
+        canExecuteAttackInUpdate = false;
     }
 
     protected override void AttackPlayer(Collision2D collision2D)
@@ -35,6 +35,12 @@ public class EnemyMelee : Enemy
         {
             StartCoroutine(DamageCooldown());
         }   
+    }
+
+    protected override void SetPropScriptAndProperties()
+    {
+        Props props = gameObject.AddComponent<Props>();
+        props.SetProperties(damage: 5, velocity: 10, durability: 1, weight: 1);
     }
 
 

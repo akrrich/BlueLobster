@@ -9,7 +9,7 @@ public class EnemyBomb : Enemy
         speed = 3f;
         radius = 5f;
 
-        executeAttackInUpdate = false;
+        canExecuteAttackInUpdate = false;
     }
 
     protected override void AttackPlayer(Collision2D collision2D)
@@ -19,5 +19,11 @@ public class EnemyBomb : Enemy
             playerController.GetDamage(damage);
             Destroy(gameObject);
         }
+    }
+
+    protected override void SetPropScriptAndProperties()
+    {
+        Props props = gameObject.AddComponent<Props>();
+        props.SetProperties(damage: 1, velocity: 10, durability: 1, weight: 1);
     }
 }

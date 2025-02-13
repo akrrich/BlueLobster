@@ -10,6 +10,7 @@ public abstract class Enemy : MonoBehaviour
     protected BoxCollider2D boxCollider;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+    private AudioSource enemyAudio;
 
     private int currentPointIndex = 0;
     protected int health;
@@ -20,7 +21,7 @@ public abstract class Enemy : MonoBehaviour
     protected float radius;
     private float timeToChangePropMode = 0.5f;
 
-    protected bool executeAttackInUpdate;
+    protected bool canExecuteAttackInUpdate;
 
     protected Vector2 currentTarget;
 
@@ -80,6 +81,7 @@ public abstract class Enemy : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();    
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        enemyAudio = GetComponent<AudioSource>();
     }
 
     private void SubscribeToGameManagerEvents()
@@ -177,12 +179,12 @@ public abstract class Enemy : MonoBehaviour
 
     private void CheckWhereCanExecuteTheAttack(Collision2D collision2D)
     {
-        if (!executeAttackInUpdate && collision2D != null)
+        if (!canExecuteAttackInUpdate && collision2D != null)
         {
             AttackPlayer(collision2D);
         }
 
-        if (executeAttackInUpdate)
+        if (canExecuteAttackInUpdate)
         {
             AttackPlayer(null);
         }
@@ -205,6 +207,7 @@ public abstract class Enemy : MonoBehaviour
 
         gameObject.tag = "Objeto";
 
+        boxCollider.isTrigger = true;
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
         rb.simulated = true;
@@ -222,12 +225,14 @@ public abstract class Enemy : MonoBehaviour
         transform.SetParent(null);
 
         Destroy(parent.gameObject);
-        Destroy(this); // esto dfestruye el script adjunto al gameObject
+        Destroy(this);
 
-        Props props = gameObject.AddComponent<Props>();
-        props.SetProperties(damage: 5, velocity: 10, durability: 1, weight: 1);
+        SetPropScriptAndProperties();
+
+        enemyAudio.clip = Resources.Load<AudioClip>("Audios/ThrowProp");
     }
 
     protected abstract void InitializeValues();
     protected abstract void AttackPlayer(Collision2D collision2D);
+    protected abstract void SetPropScriptAndProperties();
 }
