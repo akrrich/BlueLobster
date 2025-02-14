@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
     // Simulacion de FixedUpdate
     void FixedUpdatePlayerController()
     {
-        Movements();
+        Movement();
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdatePlayerController;
     }
 
-    private void Movements()
+    private void Movement()
     {
         XAxis = Input.GetAxisRaw("Horizontal");
         YAxis = Input.GetAxisRaw("Vertical");
