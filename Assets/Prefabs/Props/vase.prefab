@@ -295,6 +295,7 @@ MonoBehaviour:
   velocity: 15
   durability: 0
   weight: 0
+  radius: 0.4
 --- !u!1 &4902343871970045128
 GameObject:
   m_ObjectHideFlags: 0

@@ -106,6 +106,7 @@ MonoBehaviour:
   velocity: 15
   durability: 0
   weight: 0
+  radius: 0.6
 --- !u!61 &8865869425073183282
 BoxCollider2D:
   m_ObjectHideFlags: 0

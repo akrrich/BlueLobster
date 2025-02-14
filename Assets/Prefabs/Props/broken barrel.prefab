@@ -358,6 +358,7 @@ MonoBehaviour:
   velocity: 15
   durability: 0
   weight: 0
+  radius: 0.5
 --- !u!95 &4983642441381352932
 Animator:
   serializedVersion: 5

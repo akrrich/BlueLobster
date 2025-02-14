@@ -190,6 +190,7 @@ MonoBehaviour:
   velocity: 15
   durability: 0
   weight: 1
+  radius: 0.9
 --- !u!50 &1961119909648447450
 Rigidbody2D:
   serializedVersion: 4

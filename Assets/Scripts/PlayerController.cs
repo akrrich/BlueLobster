@@ -18,11 +18,15 @@ public class PlayerController : MonoBehaviour
     private int health = 100;
     private int minHealth = 1;
     private int UPDOWNdirection = 0;
+    private int damage = 1;
 
     private float XAxis;
     private float YAxis;
     private float radius = 1f;
     private float speed = 8;
+
+    private bool canPunch = false;
+    private bool isPunching = false;
 
 
     void Awake()
@@ -35,16 +39,31 @@ public class PlayerController : MonoBehaviour
     void UpdatePlayerController()
     {
         PickUp();
-        Throw();
         Hit();
+        Throw();
+        Punch();
         Animations();
-        CheckIfPlayerIsAlive();
     }
 
     // Simulacion de FixedUpdate
     void FixedUpdatePlayerController()
     {
-        PlayerMovement();
+        Movements();
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        CheckEnterColisionWithEnemy(collision);
+    }
+
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        CheckStayColisionWithEnemy(collision);
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        CheckExitColisionWithEnemy(collision);
     }
 
     void OnDestroy()
@@ -62,6 +81,8 @@ public class PlayerController : MonoBehaviour
     public void GetDamage(int damage)
     {
         health -= damage;
+
+        CheckIfPlayerIsAlive();
     }
 
 
@@ -89,7 +110,7 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdatePlayerController;
     }
 
-    private void PlayerMovement()
+    private void Movements()
     {
         XAxis = Input.GetAxisRaw("Horizontal");
         YAxis = Input.GetAxisRaw("Vertical");
@@ -127,6 +148,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Hit()
+    {
+        if (currentProp != null && Input.GetKeyDown(KeyCode.X))
+        {
+            if (currentProp != null)
+            {
+                currentProp.HitWithObject();
+            }
+        }
+    }
+
     private void Throw()
     {
         if (currentProp != null && Input.GetKeyDown(KeyCode.C))
@@ -139,14 +171,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void Hit()
+    private void Punch()
     {
-        if (currentProp != null && Input.GetKeyDown(KeyCode.X))
+        if (currentProp == null && canPunch && Input.GetKeyDown(KeyCode.X))
         {
-            if (currentProp != null)
-            {
-                currentProp.HitWithObject(transform.position, radius, detectionLayer);
-            }
+            isPunching = true;
         }
     }
 
@@ -173,11 +202,13 @@ public class PlayerController : MonoBehaviour
 
             rightHandAnim.SetBool("Holding_light", isHoldingLight);
             leftHandAnim.SetBool("Holding_light", isHoldingLight);
+
+            // agregar animacion de piña y animacion de golpear con objeto
         }
 
         else
         {
-            // animacion de muerte
+            // agregar animacion de muerte
         }
     }
 
@@ -187,8 +218,44 @@ public class PlayerController : MonoBehaviour
         {
             PlayerEvents.OnPlayerDefeated?.Invoke();
 
-            // aca habria que poner la animacion de muerte del player
+            // provisorio el desactivar el objeto
             gameObject.SetActive(false);
+        }
+    }
+
+    private void CheckEnterColisionWithEnemy(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Enemy"))
+        {
+            canPunch = true;
+        }
+    }
+
+    private void CheckStayColisionWithEnemy(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Enemy"))
+        {
+            canPunch = true;
+
+            if (isPunching)
+            {
+                Enemy currentEnemy = collision.collider.GetComponent<Enemy>();
+
+                if (currentEnemy != null)
+                {
+                    currentEnemy.GetDamage(damage);
+                }
+
+                isPunching = false;
+            }
+        }
+    }
+
+    private void CheckExitColisionWithEnemy(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Enemy"))
+        {
+            canPunch = false;
         }
     }
 }

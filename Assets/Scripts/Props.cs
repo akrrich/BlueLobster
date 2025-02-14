@@ -7,6 +7,7 @@ public class Props : MonoBehaviour
     private Rigidbody2D rb;
     private AudioSource throwSound;
     private Animator anim;
+    private SpriteRenderer spriteRenderer;
     private SpriteRenderer alert;
     private BoxCollider2D boxCollider;
 
@@ -14,9 +15,11 @@ public class Props : MonoBehaviour
     [SerializeField] private float velocity;
     [SerializeField] private int durability;
     [SerializeField] private int weight;
+    [SerializeField] private float radius;
+
+    private int minDurability = 1;
 
     private bool hasBeenThrown = false;
-    private bool isHitting = false;
 
     public int Weight { get => weight; }
 
@@ -28,7 +31,13 @@ public class Props : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        HandleCollisions(collision);
+        HandleEnterCollisions(collision);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 
 
@@ -48,6 +57,7 @@ public class Props : MonoBehaviour
                     {
                         currentProp.alert.gameObject.SetActive(false);
                     }
+
                     return currentProp;
                 }
             }
@@ -56,28 +66,24 @@ public class Props : MonoBehaviour
         return null;
     }
 
-    public void SetProperties(int damage, int velocity, int durability, int weight)
+    public void SetProperties(int damage, float velocity, int durability, int weight, float radius)
     {
         this.damage = damage;
         this.velocity = velocity;
         this.durability = durability;
         this.weight = weight;
+        this.radius = radius;
     }
 
     public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
     {
         boxCollider.isTrigger = false;
-        rb.isKinematic = true;
         rb.simulated = false;
         rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0f;
 
-        if (weight == 1)
-        {
-            transform.position = objectPositionHeavy.position;
-        }
+        if (weight == 1) transform.position = objectPositionHeavy.position;
+        if (weight == 0) transform.position = objectPositionLight.position;
 
-        else if (weight == 0) transform.position = objectPositionLight.position;
         transform.SetParent(playerController.transform);
     }
 
@@ -113,20 +119,27 @@ public class Props : MonoBehaviour
         Animations();
     }
 
-    public void HitWithObject(Vector2 position, float radius, LayerMask detectionLayer)
+    public void HitWithObject()
     {
-        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(position, radius, detectionLayer);
+        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, radius, LayerMask.NameToLayer("Everything"));
 
         foreach (var obj in objectsInRange)
         {
-            /* aca tendria que ir una corrutina que despues del tiempo
-            total de hacer la animacion de golpe si entra en el rango
-            se ejecute */
-
             if (obj.CompareTag("Enemy"))
             {
-                isHitting = true;
-                rb.simulated = true;
+                Enemy currentEnemy = obj.GetComponent<Enemy>();
+
+                if (currentEnemy != null)
+                {
+                    durability--;
+
+                    if (durability < minDurability)
+                    {
+                        DestroyThisGameObject();
+                    }
+
+                    currentEnemy.GetDamage(damage);
+                }
             }
         }
     }
@@ -139,43 +152,69 @@ public class Props : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         throwSound = GetComponent<AudioSource>(); 
         anim = GetComponent<Animator>();
-        boxCollider = GetComponent<BoxCollider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         alert = transform.Find("Alert")?.GetComponent<SpriteRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
     }
 
-    private void HandleCollisions(Collision2D collision)
+    private void HandleEnterCollisions(Collision2D collision)
     {
         string collisionTag = collision.collider.tag;
 
         switch (collisionTag)
         {
             case "Enemy":
-                CheckEnemyColision(collision);
+                CheckEnterEnemyColision(collision);
                 break;
 
             default: 
-                CheckSceneryColisions(collision);
+                CheckEnterSceneryColisions(collision);
                 break;
         }
     }
 
-    private void CheckEnemyColision(Collision2D collision)
+    private void CheckEnterEnemyColision(Collision2D collision)
     {
-        if ((hasBeenThrown || isHitting) && collision.collider.CompareTag("Enemy"))
+        if (hasBeenThrown && collision.collider.CompareTag("Enemy"))
         {
             Enemy currentEnemy = collision.collider.GetComponent<Enemy>();
 
             if (currentEnemy != null)
             {
-                Destroy(gameObject);
+                DestroyThisGameObject();
                 currentEnemy.GetDamage(damage);
             }
         }
     }
 
-    private void CheckSceneryColisions(Collision2D collision)
+    private void CheckEnterSceneryColisions(Collision2D collision)
     {
         if (!collision.collider.CompareTag("Player"))
+        {
+            DestroyThisGameObject();
+        }
+    }
+
+    private void DestroyThisGameObject()
+    {
+        SpriteRenderer[] childSprites = GetComponentsInChildren<SpriteRenderer>();
+
+        foreach (var child in childSprites)
+        {
+            child.enabled = false;
+        }
+
+        boxCollider.enabled = false;
+        spriteRenderer.enabled = false;
+        rb.simulated = false;
+        rb.isKinematic = true;
+
+        if (throwSound.isPlaying)
+        {
+            Destroy(gameObject, throwSound.clip.length);
+        }
+
+        else
         {
             Destroy(gameObject);
         }

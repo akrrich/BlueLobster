@@ -24,6 +24,6 @@ public class EnemyBomb : Enemy
     protected override void SetPropScriptAndProperties()
     {
         Props props = gameObject.AddComponent<Props>();
-        props.SetProperties(damage: 1, velocity: 10, durability: 1, weight: 1);
+        props.SetProperties(damage: 1, velocity: 10, durability: 1, weight: 1, radius: 1);
     }
 }
