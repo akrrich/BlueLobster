@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Props currentProp;
+    private JoystickTouch joystickTouch;
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -33,15 +34,12 @@ public class PlayerController : MonoBehaviour
     {
         GetComponents();
         SubscribeToGameManagerEvents();
+        SubscribeToInputEvents();
     }
     
     // Simulacion de Update
     void UpdatePlayerController()
     {
-        PickUp();
-        Hit();
-        Throw();
-        Punch();
         Animations();
     }
 
@@ -54,6 +52,7 @@ public class PlayerController : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         CheckEnterColisionWithEnemy(collision);
+        CheckEnterColisionAndTriggerWithPropToAEnabledButton(collision.collider);
     }
 
     void OnCollisionStay2D(Collision2D collision)
@@ -64,11 +63,23 @@ public class PlayerController : MonoBehaviour
     void OnCollisionExit2D(Collision2D collision)
     {
         CheckExitColisionWithEnemy(collision);
+        CheckExitColisionAndTriggerWithPropToDisabledButton(collision.collider);
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        CheckEnterColisionAndTriggerWithPropToAEnabledButton(collider);
+    }
+
+    void OnTriggerExit2D(Collider2D collider)
+    {
+        CheckExitColisionAndTriggerWithPropToDisabledButton(collider);
     }
 
     void OnDestroy()
     {
         UnsubscribeToGameManagerEvents();
+        UnsubscribeToInputEvents();
     }
 
     void OnDrawGizmosSelected()
@@ -88,6 +99,8 @@ public class PlayerController : MonoBehaviour
 
     private void GetComponents()
     {
+        joystickTouch = FindObjectOfType<JoystickTouch>();
+
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
@@ -110,34 +123,53 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.OnGameStatePlayingFixedUpdate -= FixedUpdatePlayerController;
     }
 
+    private void SubscribeToInputEvents()
+    {
+        InputSystem.OnPunchAndHit += Punch;
+        InputSystem.OnPunchAndHit += Hit;
+        InputSystem.OnThrow += Throw;
+        InputSystem.OnPickUp += PickUp;
+    }
+
+    private void UnsubscribeToInputEvents()
+    {
+        InputSystem.OnPunchAndHit -= Punch;
+        InputSystem.OnPunchAndHit -= Hit;
+        InputSystem.OnThrow -= Throw;
+        InputSystem.OnPickUp -= PickUp;
+    }
+
     private void Movement()
     {
-        XAxis = Input.GetAxisRaw("Horizontal");
-        YAxis = Input.GetAxisRaw("Vertical");
+        Vector2 direction = new Vector2(joystickTouch.LastDirection.x, joystickTouch.LastDirection.y);
+        rb.velocity = direction.normalized * speed;
 
-        Vector2 PlayerVelocity = new Vector2(XAxis, YAxis);
-        rb.velocity = PlayerVelocity.normalized * speed;
-
-        if (rb.velocity.x != 0 && rb.velocity.y == 0)
+        if (direction.x > 0.1f) // Derecha
         {
-            transform.localScale = new Vector2(XAxis, transform.localScale.y);
-            UPDOWNdirection = 0;
+            UPDOWNdirection = 0; 
+            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
         }
 
-        else
+        else if (direction.x < -0.1f) // Izquierda
         {
-            if (rb.velocity.y != 0)
-            {
-               if (rb.velocity.y > 0) UPDOWNdirection = 1;
+            UPDOWNdirection = 0;
+            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+        }
 
-               else if (rb.velocity.y < 0) UPDOWNdirection = -1;
-            }
+        else if (direction.y > 0.1f) // Arriba
+        {
+            UPDOWNdirection = 1;
+        }
+
+        else if (direction.y < -0.1f) // Abajo
+        {
+            UPDOWNdirection = -1;
         }
     }
 
     private void PickUp()
     {
-        if (currentProp == null && Input.GetKeyDown(KeyCode.Z))
+        if (currentProp == null)
         {
             currentProp = Props.FindCurrentProp(currentProp, transform.position, radius, detectionLayer);
 
@@ -150,30 +182,24 @@ public class PlayerController : MonoBehaviour
 
     private void Hit()
     {
-        if (currentProp != null && Input.GetKeyDown(KeyCode.X))
-        {
-            if (currentProp != null)
-            {
-                currentProp.HitWithObject();
-            }
+        if (currentProp != null)
+        {  
+            currentProp.HitWithObject();
         }
     }
 
     private void Throw()
     {
-        if (currentProp != null && Input.GetKeyDown(KeyCode.C))
+        if (currentProp != null)
         {
-            if (currentProp != null)
-            {
-                currentProp.ThrowObject(UPDOWNdirection);
-                currentProp = null;
-            }
+            currentProp.ThrowObject(UPDOWNdirection);
+            currentProp = null;
         }
     }
 
     private void Punch()
     {
-        if (currentProp == null && canPunch && Input.GetKeyDown(KeyCode.X))
+        if (currentProp == null && canPunch)
         {
             isPunching = true;
         }
@@ -256,6 +282,22 @@ public class PlayerController : MonoBehaviour
         if (collision.collider.CompareTag("Enemy"))
         {
             canPunch = false;
+        }
+    }
+
+    private void CheckEnterColisionAndTriggerWithPropToAEnabledButton(Collider2D collider)
+    {
+        if (currentProp == null && collider.CompareTag("Objeto"))
+        {
+            PlayerEvents.OnEnabledPickUpButton?.Invoke();
+        }
+    }
+
+    private void CheckExitColisionAndTriggerWithPropToDisabledButton(Collider2D collider)
+    {
+        if (collider.CompareTag("Objeto"))
+        {
+            PlayerEvents.OnDisabledPickUpButton?.Invoke();
         }
     }
 }

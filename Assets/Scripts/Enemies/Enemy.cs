@@ -207,7 +207,10 @@ public abstract class Enemy : MonoBehaviour
 
         gameObject.tag = "Objeto";
 
+        boxCollider.enabled = false;
+        boxCollider.enabled = true;
         boxCollider.isTrigger = true;
+
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
         rb.simulated = true;
