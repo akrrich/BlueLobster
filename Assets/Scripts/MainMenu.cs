@@ -12,9 +12,21 @@ public class MainMenu : MonoBehaviour
     private AudioSource buttonClick;
 
 
-    void Start()
+    void Awake()
     {
         GetComponents();
+        SuscribeToGameManagerEvents();
+    }
+
+    // Simulacion de Update
+    void UpdateMainMenu()
+    {
+        ChangeSelectedButtonToSettingsPressingCircleB();
+    }
+
+    void OnDestroy()
+    {
+        UnSuscribeToGameManagerEvents();
     }
 
 
@@ -27,6 +39,11 @@ public class MainMenu : MonoBehaviour
     {
         buttonClick.Play();
         panelSettings.SetActive(true);
+
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            EventSystemMainMenu.OnChangeSelectedButtonToSliderMusic?.Invoke();
+        }
     }
 
     public void ButtonExit()
@@ -38,12 +55,35 @@ public class MainMenu : MonoBehaviour
     {
         buttonClick.Play();
         panelSettings.SetActive(false);
+
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            EventSystemMainMenu.OnChangeSelectedButtonToSettings?.Invoke();
+        }
     }
 
 
     private void GetComponents()
     {
         buttonClick = GetComponent<AudioSource>();
+    }
+
+    private void ChangeSelectedButtonToSettingsPressingCircleB()
+    {
+        if (Input.GetButtonDown("Circle/B") && DeviceManager.CurrentPlatform == "PC")
+        {
+            ButtonBack();
+        }
+    }
+
+    private void SuscribeToGameManagerEvents()
+    {
+        GameManager.Instance.OnGameStateMenu += UpdateMainMenu;
+    }
+
+    private void UnSuscribeToGameManagerEvents()
+    {
+        GameManager.Instance.OnGameStateMenu -= UpdateMainMenu;
     }
 
     private IEnumerator LoadSceneAfterButtonClick()

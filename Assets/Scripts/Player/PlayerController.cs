@@ -21,8 +21,6 @@ public class PlayerController : MonoBehaviour
     private int UPDOWNdirection = 0;
     private int damage = 1;
 
-    private float XAxis;
-    private float YAxis;
     private float radius = 1f;
     private float speed = 8;
 
@@ -40,6 +38,7 @@ public class PlayerController : MonoBehaviour
     // Simulacion de Update
     void UpdatePlayerController()
     {
+        InputsForControllerAndPC();
         Animations();
     }
 
@@ -125,23 +124,29 @@ public class PlayerController : MonoBehaviour
 
     private void SubscribeToInputEvents()
     {
-        InputSystem.OnPunchAndHit += Punch;
-        InputSystem.OnPunchAndHit += Hit;
-        InputSystem.OnThrow += Throw;
-        InputSystem.OnPickUp += PickUp;
+        if (DeviceManager.CurrentPlatform == "Mobile")
+        {
+            InputSystem.OnPunchAndHit += Punch;
+            InputSystem.OnPunchAndHit += Hit;
+            InputSystem.OnThrow += Throw;
+            InputSystem.OnPickUp += PickUp;
+        }
     }
 
     private void UnsubscribeToInputEvents()
     {
-        InputSystem.OnPunchAndHit -= Punch;
-        InputSystem.OnPunchAndHit -= Hit;
-        InputSystem.OnThrow -= Throw;
-        InputSystem.OnPickUp -= PickUp;
+        if (DeviceManager.CurrentPlatform == "Mobile")
+        {
+            InputSystem.OnPunchAndHit -= Punch;
+            InputSystem.OnPunchAndHit -= Hit;
+            InputSystem.OnThrow -= Throw;
+            InputSystem.OnPickUp -= PickUp;
+        }
     }
 
     private void Movement()
     {
-        Vector2 direction = new Vector2(joystickTouch.LastDirection.x, joystickTouch.LastDirection.y);
+        Vector2 direction = DeviceManager.GetMovementInput(joystickTouch.LastDirection);
         rb.velocity = direction.normalized * speed;
 
         if (direction.x > 0.1f) // Derecha
@@ -164,6 +169,34 @@ public class PlayerController : MonoBehaviour
         else if (direction.y < -0.1f) // Abajo
         {
             UPDOWNdirection = -1;
+        }
+    }
+
+    private void InputsForControllerAndPC()
+    {
+        int leftClick = 0; int rightClick = 1;
+
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            if (Input.GetMouseButtonDown(rightClick) || Input.GetButtonDown("Circle/B"))
+            {
+                PickUp();
+            }
+
+            if (Input.GetMouseButtonDown(leftClick) || Input.GetButtonDown("Square/X"))
+            {
+                Hit();
+            }
+
+            if (Input.GetMouseButtonDown(rightClick) || Input.GetButtonDown("Circle/B"))
+            {
+                Throw();
+            }
+
+            if (Input.GetMouseButtonDown(leftClick) || Input.GetButtonDown("Square/X"))
+            {
+                Punch();
+            }
         }
     }
 
@@ -190,7 +223,7 @@ public class PlayerController : MonoBehaviour
 
     private void Throw()
     {
-        if (currentProp != null)
+        if (currentProp != null && currentProp.CanThorw)
         {
             currentProp.ThrowObject(UPDOWNdirection);
             currentProp = null;

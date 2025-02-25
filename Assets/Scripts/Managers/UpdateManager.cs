@@ -1,6 +1,14 @@
 public class UpdateManager
 {
-    public void UpdateAllGame()
+    public void UpdateGameInMenuState()
+    {
+        if (GameManager.Instance.GameState == GameState.Menu)
+        {
+            GameManager.Instance.OnGameStateMenu?.Invoke();
+        }
+    }
+
+    public void UpdateAGameInPlayingState()
     {
         if (GameManager.Instance.GameState == GameState.Playing)
         {
@@ -8,7 +16,7 @@ public class UpdateManager
         }
     }
 
-    public void FixedUpdateAllGame()
+    public void FixedUpdateGameInPlayingState()
     {
         if (GameManager.Instance.GameState == GameState.Playing)
         {

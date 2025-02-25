@@ -13,6 +13,11 @@ public class JoystickTouch : MonoBehaviour, IDragHandler, IPointerDownHandler, I
 
     void Awake()
     {
+        DestroyGameObjectIfCurrentDeviceIsPC();
+    }
+
+    void Start()
+    {
         StartingValues();
     }
 
@@ -40,6 +45,15 @@ public class JoystickTouch : MonoBehaviour, IDragHandler, IPointerDownHandler, I
     {
         joystickHandle.anchoredPosition = Vector2.zero; 
         lastDirection = Vector2.zero;
+    }
+
+
+    private void DestroyGameObjectIfCurrentDeviceIsPC()
+    {
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void StartingValues()

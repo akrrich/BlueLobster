@@ -13,34 +13,63 @@ public class PauseManager : MonoBehaviour
     private Button buttonPause;
     private AudioSource buttonClick;
 
+    private bool isGamePaused = false;
+
 
     void Awake()
     {
         GetComponents();
+    }
+
+    void Start()
+    {
+        GetComponents();
+        DestroyPauseButtonIfCurrentDeviceIsPC();
         SubscribeToFinalScreenEvents();
+        SuscribeToGameManagerEvents();
+    }
+
+    // Simulacion de Update
+    void UpdatePauseManager()
+    {
+        PauseAndUnPauseGameForDevicePC();
+        ChangeSelectedButtonToSettingsPressingCircleB();
     }
 
     void OnDestroy()
     {
         UnSubscribeToFinalSccreenEvents();
+        UnsuscribeToGameManagerEvents();
     }
 
 
     public void ButtonPauseGame()
     {
+        isGamePaused = true;
         Time.timeScale = 0f;
 
         buttonClick.Play();
-        buttonPause.gameObject.SetActive(false);
+
+        if (buttonPause != null)
+        {
+            buttonPause.gameObject.SetActive(false);
+        }
+
         panelPause.SetActive(true);
     }
 
     public void ButtonResumeGame()
     {
+        isGamePaused = false;
         Time.timeScale = 1f;
 
         buttonClick.Play();
-        buttonPause.gameObject.SetActive(true);
+
+        if (buttonPause != null)
+        {
+            buttonPause.gameObject.SetActive(true);
+        }
+
         panelPause.SetActive(false);
     }
 
@@ -48,12 +77,22 @@ public class PauseManager : MonoBehaviour
     {
         buttonClick.Play();
         panelSettings.SetActive(true);
+
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            EventSystemGame.OnChangeSelectedButtonToSliderMusic?.Invoke();
+        }
     }
 
     public void ButtonBack()
     {
         buttonClick.Play();
         panelSettings.SetActive(false);
+
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            EventSystemGame.OnChangeSelectedButtonToSettings?.Invoke();
+        }
     }
 
     public void ButtonMainMenu()
@@ -69,20 +108,68 @@ public class PauseManager : MonoBehaviour
     }
 
 
+    private void DestroyPauseButtonIfCurrentDeviceIsPC()
+    {
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            Destroy(buttonPause.gameObject);
+        }
+    }
+
     private void GetComponents()
     {
         buttonPause = GetComponentInChildren<Button>();
         buttonClick = GetComponent<AudioSource>();
     }
 
+    private void ChangeSelectedButtonToSettingsPressingCircleB()
+    {
+        if (Input.GetButtonDown("Circle/B") && DeviceManager.CurrentPlatform == "PC")
+        {
+            ButtonBack();
+        }
+    }
+
+    private void SuscribeToGameManagerEvents()
+    {
+        GameManager.Instance.OnGameStatePlaying += UpdatePauseManager;
+    }
+
+    private void UnsuscribeToGameManagerEvents()
+    {
+        GameManager.Instance.OnGameStatePlaying -= UpdatePauseManager;
+    }
+
     private void SubscribeToFinalScreenEvents()
     {
-        FinalScreens.OnPauseButtonDisabled += DisabledPauseButton;
+        if (DeviceManager.CurrentPlatform == "Mobile")
+        {
+            FinalScreens.OnPauseButtonDisabled += DisabledPauseButton;
+        }
     }
 
     private void UnSubscribeToFinalSccreenEvents()
     {
-        FinalScreens.OnPauseButtonDisabled -= DisabledPauseButton;
+        if (DeviceManager.CurrentPlatform == "Mobile")
+        {
+            FinalScreens.OnPauseButtonDisabled -= DisabledPauseButton;
+        }
+    }
+
+    private void PauseAndUnPauseGameForDevicePC()
+    {
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Options/Settings")) && !isGamePaused)
+            {
+                ButtonPauseGame();
+            }
+
+            else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Options/Settings")) && isGamePaused)
+            {
+                ButtonResumeGame();
+            }
+        }
     }
 
     private IEnumerator LoadSceneAfterButtonClick()
@@ -107,6 +194,9 @@ public class PauseManager : MonoBehaviour
 
     private void DisabledPauseButton()
     {
-        buttonPause.gameObject.SetActive(false);
+        if (buttonPause != null)
+        {
+            buttonPause.gameObject.SetActive(false);
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Props : MonoBehaviour
@@ -19,9 +20,12 @@ public class Props : MonoBehaviour
 
     private int minDurability = 1;
 
+    private bool canThrow = false;
     private bool hasBeenThrown = false;
 
     public int Weight { get => weight; }
+
+    public bool CanThorw { get => canThrow; }
 
 
     void Awake()
@@ -77,7 +81,7 @@ public class Props : MonoBehaviour
 
     public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
     {
-        boxCollider.isTrigger = false;
+        boxCollider.isTrigger = false; // Para el enemigo cuando se convierte en objeto.
         rb.simulated = false;
         rb.velocity = Vector2.zero;
 
@@ -85,6 +89,8 @@ public class Props : MonoBehaviour
         if (weight == 0) transform.position = objectPositionLight.position;
 
         transform.SetParent(playerController.transform);
+
+        StartCoroutine(CanThrowTheObject());
     }
 
     public void ThrowObject(int direction)
@@ -157,6 +163,15 @@ public class Props : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
     }
 
+    private IEnumerator CanThrowTheObject()
+    {
+        float waitingTime = 0.125f;
+
+        yield return new WaitForSeconds(waitingTime);
+
+        canThrow = true;
+    }
+
     private void HandleEnterCollisions(Collision2D collision)
     {
         string collisionTag = collision.collider.tag;
@@ -175,7 +190,7 @@ public class Props : MonoBehaviour
 
     private void CheckEnterEnemyColision(Collision2D collision)
     {
-        if (hasBeenThrown && collision.collider.CompareTag("Enemy"))
+        if (hasBeenThrown)
         {
             Enemy currentEnemy = collision.collider.GetComponent<Enemy>();
 
@@ -197,6 +212,7 @@ public class Props : MonoBehaviour
 
     private void DestroyThisGameObject()
     {
+        // Buscar todos los sprites que tangan los enemigos, como las manos, etc.
         SpriteRenderer[] childSprites = GetComponentsInChildren<SpriteRenderer>();
 
         foreach (var child in childSprites)

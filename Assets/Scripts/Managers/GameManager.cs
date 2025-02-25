@@ -12,16 +12,21 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
 
     private UpdateManager updateManager;
+    private DeviceManager deviceManager;
 
     private event Action onGameStatePlaying;
     private event Action onGameStatePlayingFixedUpdate;
+    private event Action onGameStateMenu;
+
+    private GameState gameState;
+
 
     public static GameManager Instance { get => instance; }
 
     public Action OnGameStatePlaying { get => onGameStatePlaying; set => onGameStatePlaying = value; }
     public Action OnGameStatePlayingFixedUpdate { get => onGameStatePlayingFixedUpdate; set => onGameStatePlayingFixedUpdate = value; }
+    public Action OnGameStateMenu { get => onGameStateMenu; set => onGameStateMenu = value; }
 
-    private GameState gameState;
     public GameState GameState { get => gameState; }
 
 
@@ -67,14 +72,22 @@ public class GameManager : MonoBehaviour
     private void InitializeGameManager()
     {
         gameState = GameState.Menu;
+
         updateManager = new UpdateManager();
+        deviceManager = new DeviceManager();
     }
 
     private void UpdateGame()
     {
-        if (gameState == GameState.Playing)
+        switch (gameState)
         {
-            updateManager.UpdateAllGame();
+            case GameState.Menu:
+                updateManager.UpdateGameInMenuState();
+                break;
+
+            case GameState.Playing:
+                updateManager.UpdateAGameInPlayingState();
+                break;
         }
     }
 
@@ -82,7 +95,7 @@ public class GameManager : MonoBehaviour
     {
         if (gameState == GameState.Playing)
         {
-            updateManager.FixedUpdateAllGame();
+            updateManager.FixedUpdateGameInPlayingState();
         }
     }
 }

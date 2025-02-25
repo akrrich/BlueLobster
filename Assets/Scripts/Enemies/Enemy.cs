@@ -72,7 +72,6 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-
     private void GetComponents()
     {
         playerController = FindObjectOfType<PlayerController>();
@@ -213,7 +212,6 @@ public abstract class Enemy : MonoBehaviour
 
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
-        rb.simulated = true;
 
         anim.SetBool("Dead", true);
 

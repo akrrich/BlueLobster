@@ -17,6 +17,11 @@ public class InputSystem : MonoBehaviour
 
     void Awake()
     {
+        DestroyGameObjectIfCurrentDeviceIsPC();
+    }
+
+    void Start()
+    {
         GetComponents();
         SuscribeToPlayerEvents();
     }
@@ -39,9 +44,17 @@ public class InputSystem : MonoBehaviour
 
     public void ButtonPickUp()
     {
-        OnPickUp?.Invoke();
+        onPickUp?.Invoke();
     }
 
+
+    private void DestroyGameObjectIfCurrentDeviceIsPC()
+    {
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void GetComponents()
     {
