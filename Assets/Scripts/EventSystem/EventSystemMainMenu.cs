@@ -7,7 +7,7 @@ public class EventSystemMainMenu : MonoBehaviour
 {
     private EventSystem eventSystem;
     private AudioSource selectedButton;
-    private GameObject lastSelected;
+    private GameObject lastButtonSelected;
 
     [SerializeField] private Button[] buttonsMainMenu; // 0 =  Play, 1 = Settings, 2 = Exit
     [SerializeField] private GameObject[] optionsSettings; // 0 = SliderMusic, 1 = SliderSFX, 2 = ToggleHZ, 3 = Back
@@ -65,7 +65,7 @@ public class EventSystemMainMenu : MonoBehaviour
     private void InitializeSelectedButton()
     {
         eventSystem.firstSelectedGameObject = buttonsMainMenu[0].gameObject;
-        lastSelected = eventSystem.firstSelectedGameObject;
+        lastButtonSelected = eventSystem.firstSelectedGameObject;
     }
 
     private void SuscribeToGameManagerEvents()
@@ -106,7 +106,7 @@ public class EventSystemMainMenu : MonoBehaviour
     {
         GameObject currentSelected = eventSystem.currentSelectedGameObject;
 
-        if (currentSelected != null && currentSelected != lastSelected)
+        if (currentSelected != null && currentSelected != lastButtonSelected)
         {
             if (!ignoreNextSelectionSound)
             {
@@ -118,7 +118,7 @@ public class EventSystemMainMenu : MonoBehaviour
                 ignoreNextSelectionSound = false;
             }
 
-            lastSelected = currentSelected;
+            lastButtonSelected = currentSelected;
         }
     }
 }

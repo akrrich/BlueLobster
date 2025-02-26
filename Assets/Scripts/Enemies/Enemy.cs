@@ -105,7 +105,7 @@ public abstract class Enemy : MonoBehaviour
         else
         {
             Patrol();
-        }   
+        }
     }
 
     protected bool IsPlayerInRangeWithRadius()

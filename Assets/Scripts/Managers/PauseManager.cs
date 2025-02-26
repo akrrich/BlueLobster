@@ -23,7 +23,6 @@ public class PauseManager : MonoBehaviour
 
     void Start()
     {
-        GetComponents();
         DestroyPauseButtonIfCurrentDeviceIsPC();
         SubscribeToFinalScreenEvents();
         SuscribeToGameManagerEvents();

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-public class InputSystem : MonoBehaviour
+public class InputTouch : MonoBehaviour
 {
     private Button[] buttonsInput; // 0 = PunchAndHit, 1 = Throw, 2 = PickUp
 

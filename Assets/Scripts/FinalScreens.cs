@@ -6,11 +6,14 @@ using System;
 
 public class FinalScreens : MonoBehaviour
 {
-    [SerializeField] private Button[] buttonsClickOnce;
+    [SerializeField] private Button[] buttonsLose; // 0 = RestarGame, 1 = MainMenu
     private Image[] screens;  // 0 = Win, 1 = Loose
     private AudioSource buttonClick;
 
     private static event Action onPauseButtonDisabled;
+
+    public Button[] ButtonsLose { get => buttonsLose; set => buttonsLose = value; }
+
     public static Action OnPauseButtonDisabled { get => onPauseButtonDisabled; set => onPauseButtonDisabled = value; }
 
 
@@ -28,12 +31,12 @@ public class FinalScreens : MonoBehaviour
 
     public void ButtonRestartGame()
     {
-        StartCoroutine(LoadSceneAfterButtonClick(buttonsClickOnce[0], "Game"));
+        StartCoroutine(LoadSceneAfterButtonClick(buttonsLose[0], "Game"));
     } 
 
     public void ButtonMainMenu()
     {
-        StartCoroutine(LoadSceneAfterButtonClick(buttonsClickOnce[1], "MainMenu"));
+        StartCoroutine(LoadSceneAfterButtonClick(buttonsLose[1], "MainMenu"));
         GameManager.Instance.ChangeStateTo(GameState.Menu);
     }
 

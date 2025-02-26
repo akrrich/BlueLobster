@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private LayerMask detectionLayer;
 
-    private int health = 100;
+    private int health = 1;
     private int minHealth = 1;
     private int UPDOWNdirection = 0;
     private int damage = 1;
@@ -24,8 +24,12 @@ public class PlayerController : MonoBehaviour
     private float radius = 1f;
     private float speed = 8;
 
+    private bool isAlive = true;
     private bool canPunch = false;
     private bool isPunching = false;
+
+
+    public bool IsAlive { get => isAlive; }
 
 
     void Awake()
@@ -126,10 +130,10 @@ public class PlayerController : MonoBehaviour
     {
         if (DeviceManager.CurrentPlatform == "Mobile")
         {
-            InputSystem.OnPunchAndHit += Punch;
-            InputSystem.OnPunchAndHit += Hit;
-            InputSystem.OnThrow += Throw;
-            InputSystem.OnPickUp += PickUp;
+            InputTouch.OnPunchAndHit += Punch;
+            InputTouch.OnPunchAndHit += Hit;
+            InputTouch.OnThrow += Throw;
+            InputTouch.OnPickUp += PickUp;
         }
     }
 
@@ -137,10 +141,10 @@ public class PlayerController : MonoBehaviour
     {
         if (DeviceManager.CurrentPlatform == "Mobile")
         {
-            InputSystem.OnPunchAndHit -= Punch;
-            InputSystem.OnPunchAndHit -= Hit;
-            InputSystem.OnThrow -= Throw;
-            InputSystem.OnPickUp -= PickUp;
+            InputTouch.OnPunchAndHit -= Punch;
+            InputTouch.OnPunchAndHit -= Hit;
+            InputTouch.OnThrow -= Throw;
+            InputTouch.OnPickUp -= PickUp;
         }
     }
 
@@ -273,7 +277,9 @@ public class PlayerController : MonoBehaviour
 
     private void CheckIfPlayerIsAlive()
     {
-        if (health < minHealth)
+        isAlive = health >= minHealth; 
+
+        if (!isAlive)
         {
             PlayerEvents.OnPlayerDefeated?.Invoke();
 

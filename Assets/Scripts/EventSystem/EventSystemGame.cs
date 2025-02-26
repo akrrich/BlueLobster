@@ -5,20 +5,23 @@ using System;
 
 public class EventSystemGame : MonoBehaviour
 {
+    private FinalScreens finalScreens;
+
     private EventSystem eventSystem;
     private AudioSource selectedButton;
-    private GameObject lastSelected;
+    private GameObject lastButtonSelected;
 
     [SerializeField] private Button[] buttonsPanelPause; // 0 =  Resume, 1 = Settings, 2 = MainMenu, 3 = Exit
     [SerializeField] private GameObject[] optionsSettings; // 0 = SliderMusic, 1 = SliderSFX, 2 = ToggleHZ, 3 = Back
 
+    private static event Action onChangeSelectedButtonToSliderMusic;
+    private static event Action onChangeSelectedButtonToSettings;
+
+
     private bool ignoreNextSelectionSound = false;
 
 
-    private static event Action onChangeSelectedButtonToSliderMusic;
     public static Action OnChangeSelectedButtonToSliderMusic { get => onChangeSelectedButtonToSliderMusic; set => onChangeSelectedButtonToSliderMusic = value; }
-
-    private static event Action onChangeSelectedButtonToSettings;
     public static Action OnChangeSelectedButtonToSettings { get => onChangeSelectedButtonToSettings; set => onChangeSelectedButtonToSettings = value; }
 
 
@@ -33,6 +36,7 @@ public class EventSystemGame : MonoBehaviour
         InitializeSelectedButton();
         SuscribeToGameManagerEvents();
         SuscribeToOwnEvents();
+        SuscribeToPlayerEvents();
     }
 
     // Simulacion de Update
@@ -45,6 +49,7 @@ public class EventSystemGame : MonoBehaviour
     {
         UnsuscribeToGameManagerEvents();
         UnsuscribeToOwnEvents();
+        UnsuscribeToPlayerEvents();
     }
 
 
@@ -58,6 +63,8 @@ public class EventSystemGame : MonoBehaviour
 
     private void GetComponents()
     {
+        finalScreens = FindObjectOfType<FinalScreens>();
+
         eventSystem = GetComponent<EventSystem>();
         selectedButton = GetComponent<AudioSource>();
     }
@@ -65,7 +72,7 @@ public class EventSystemGame : MonoBehaviour
     private void InitializeSelectedButton()
     {
         eventSystem.firstSelectedGameObject = buttonsPanelPause[0].gameObject;
-        lastSelected = eventSystem.firstSelectedGameObject;
+        lastButtonSelected = eventSystem.firstSelectedGameObject;
     }
 
     private void SuscribeToGameManagerEvents()
@@ -90,6 +97,16 @@ public class EventSystemGame : MonoBehaviour
         onChangeSelectedButtonToSettings -= ChangeSelectedButtonToSettings;
     }
 
+    private void SuscribeToPlayerEvents()
+    {
+        PlayerEvents.OnPlayerDefeated += ChangeSelectedButtonToRestartGameInLooseScreenFromFinalScreens;
+    }
+
+    private void UnsuscribeToPlayerEvents()
+    {
+        PlayerEvents.OnPlayerDefeated -= ChangeSelectedButtonToRestartGameInLooseScreenFromFinalScreens;
+    }
+
     private void ChangeSelectedButtonToSliderMusic()
     {
         eventSystem.SetSelectedGameObject(optionsSettings[0].gameObject);
@@ -102,11 +119,17 @@ public class EventSystemGame : MonoBehaviour
         ignoreNextSelectionSound = true;
     }
 
+    private void ChangeSelectedButtonToRestartGameInLooseScreenFromFinalScreens()
+    {
+        eventSystem.SetSelectedGameObject(finalScreens.ButtonsLose[0].gameObject);
+        ignoreNextSelectionSound = true;
+    }
+
     private void PlaySelectionSound()
     {
         GameObject currentSelected = eventSystem.currentSelectedGameObject;
 
-        if (currentSelected != null && currentSelected != lastSelected)
+        if (currentSelected != null && currentSelected != lastButtonSelected)
         {
             if (!ignoreNextSelectionSound)
             {
@@ -118,7 +141,7 @@ public class EventSystemGame : MonoBehaviour
                 ignoreNextSelectionSound = false;
             }
 
-            lastSelected = currentSelected;
+            lastButtonSelected = currentSelected;
         }
     }
 }
