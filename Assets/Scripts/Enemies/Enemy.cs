@@ -97,14 +97,22 @@ public abstract class Enemy : MonoBehaviour
 
     private void CheckEnemyStates()
     {
-        if (IsPlayerInRangeWithRadius())
+        if (playerController.IsAlive)
         {
-            FollowPlayer();
+            if (IsPlayerInRangeWithRadius())
+            {
+                FollowPlayer();
+            }
+
+            else
+            {
+                Patrol();
+            }
         }
 
         else
         {
-            Patrol();
+            rb.velocity = Vector2.zero;
         }
     }
 
@@ -178,14 +186,17 @@ public abstract class Enemy : MonoBehaviour
 
     private void CheckWhereCanExecuteTheAttack(Collision2D collision2D)
     {
-        if (!canExecuteAttackInUpdate && collision2D != null)
+        if (playerController.IsAlive)
         {
-            AttackPlayer(collision2D);
-        }
+            if (!canExecuteAttackInUpdate && collision2D != null)
+            {
+                AttackPlayer(collision2D);
+            }
 
-        if (canExecuteAttackInUpdate)
-        {
-            AttackPlayer(null);
+            if (canExecuteAttackInUpdate)
+            {
+                AttackPlayer(null);
+            }
         }
     }
 

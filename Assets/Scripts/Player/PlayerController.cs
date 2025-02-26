@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
         SubscribeToGameManagerEvents();
         SubscribeToInputEvents();
     }
-    
+
     // Simulacion de Update
     void UpdatePlayerController()
     {
