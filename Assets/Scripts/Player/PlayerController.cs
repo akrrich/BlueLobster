@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private LayerMask detectionLayer;
 
-    private int health = 1;
+    private int health = 10;
     private int minHealth = 1;
     private int UPDOWNdirection = 0;
     private int damage = 1;
@@ -178,10 +178,10 @@ public class PlayerController : MonoBehaviour
 
     private void InputsForControllerAndPC()
     {
-        int leftClick = 0; int rightClick = 1;
-
         if (DeviceManager.CurrentPlatform == "PC")
         {
+            int leftClick = 0; int rightClick = 1;
+
             if (Input.GetMouseButtonDown(rightClick) || Input.GetButtonDown("Circle/B"))
             {
                 PickUp();

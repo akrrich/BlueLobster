@@ -11,7 +11,7 @@ public class CursorController : MonoBehaviour
 
     void Awake()
     {
-        DestroyThisGameObjectIfCurrentDeviceISMobile();
+        DestroyThisGameObjectIfCurrentDeviceIsMobile();
         CreateCursorSingleton();
         SuscribeCursorControllerToPlayerEvents();
     }
@@ -50,7 +50,7 @@ public class CursorController : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    private void DestroyThisGameObjectIfCurrentDeviceISMobile()
+    private void DestroyThisGameObjectIfCurrentDeviceIsMobile()
     {
         if (DeviceManager.CurrentPlatform == "Mobile")
         {
@@ -78,7 +78,8 @@ public class CursorController : MonoBehaviour
             {
                 if (isOnLooseScreen)
                 {
-                    Cursor.visible = true;
+                    IsJoystickUsed();
+                    IsMouseAndKeyboardUsed();
                 }
 
                 else
