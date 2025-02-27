@@ -16,13 +16,15 @@ public class EventSystemGame : MonoBehaviour
 
     private static event Action onChangeSelectedButtonToSliderMusic;
     private static event Action onChangeSelectedButtonToSettings;
-
+    private static event Action onChangeSelectedButtonToResume;
+    private static event Action onChangeSelectedButtonRestartGame;
 
     private bool ignoreNextSelectionSound = false;
 
-
     public static Action OnChangeSelectedButtonToSliderMusic { get => onChangeSelectedButtonToSliderMusic; set => onChangeSelectedButtonToSliderMusic = value; }
     public static Action OnChangeSelectedButtonToSettings { get => onChangeSelectedButtonToSettings; set => onChangeSelectedButtonToSettings = value; }
+    public static Action OnChangeSelectedButtonToResume { get => onChangeSelectedButtonToResume; set => onChangeSelectedButtonToResume = value; }
+    public static Action OnChangeSelectedButtonRestartGame { get => onChangeSelectedButtonRestartGame; set => onChangeSelectedButtonRestartGame = value; }
 
 
     void Awake()
@@ -89,12 +91,16 @@ public class EventSystemGame : MonoBehaviour
     {
         onChangeSelectedButtonToSliderMusic += ChangeSelectedButtonToSliderMusic;
         onChangeSelectedButtonToSettings += ChangeSelectedButtonToSettings;
+        onChangeSelectedButtonToResume += ChangeSelectedButtonToResume;
+        onChangeSelectedButtonRestartGame += ChangeSelectedButtonToRestartGameInLooseScreenFromFinalScreens;
     }
 
     private void UnsuscribeToOwnEvents()
     {
         onChangeSelectedButtonToSliderMusic -= ChangeSelectedButtonToSliderMusic;
         onChangeSelectedButtonToSettings -= ChangeSelectedButtonToSettings;
+        onChangeSelectedButtonToResume -= ChangeSelectedButtonToResume;
+        onChangeSelectedButtonRestartGame -= ChangeSelectedButtonToRestartGameInLooseScreenFromFinalScreens;
     }
 
     private void SuscribeToPlayerEvents()
@@ -117,6 +123,15 @@ public class EventSystemGame : MonoBehaviour
     {
         eventSystem.SetSelectedGameObject(buttonsPanelPause[1].gameObject);
         ignoreNextSelectionSound = true;
+    }
+
+    private void ChangeSelectedButtonToResume()
+    {
+        if (eventSystem.currentSelectedGameObject != buttonsPanelPause[0].gameObject)
+        {
+            eventSystem.SetSelectedGameObject(buttonsPanelPause[0].gameObject);
+            ignoreNextSelectionSound = true;
+        }
     }
 
     private void ChangeSelectedButtonToRestartGameInLooseScreenFromFinalScreens()

@@ -70,9 +70,12 @@ public class MainMenu : MonoBehaviour
 
     private void ChangeSelectedButtonToSettingsPressingCircleB()
     {
-        if (Input.GetButtonDown("Circle/B") && DeviceManager.CurrentPlatform == "PC")
+        if (DeviceManager.CurrentPlatform == "PC")
         {
-            ButtonBack();
+            if (Input.GetButtonDown("Circle/B") && panelSettings.gameObject.activeSelf)
+            {
+                ButtonBack();
+            }
         }
     }
 

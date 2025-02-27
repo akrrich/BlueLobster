@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PauseManager : MonoBehaviour
 {
+    private FinalScreens finalScreens;
+
     [SerializeField] private GameObject panelPause;
     [SerializeField] private GameObject panelSettings;
 
@@ -45,6 +47,7 @@ public class PauseManager : MonoBehaviour
     public void ButtonPauseGame()
     {
         isGamePaused = true;
+
         Time.timeScale = 0f;
 
         buttonClick.Play();
@@ -59,6 +62,19 @@ public class PauseManager : MonoBehaviour
 
     public void ButtonResumeGame()
     {
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            if (!finalScreens.Screens[1].gameObject.activeSelf)
+            {
+                EventSystemGame.OnChangeSelectedButtonToResume?.Invoke();
+            }
+
+            else
+            {
+                EventSystemGame.OnChangeSelectedButtonRestartGame?.Invoke();
+            }
+        }
+
         isGamePaused = false;
         Time.timeScale = 1f;
 
@@ -117,15 +133,20 @@ public class PauseManager : MonoBehaviour
 
     private void GetComponents()
     {
+        finalScreens = FindObjectOfType<FinalScreens>();
+
         buttonPause = GetComponentInChildren<Button>();
         buttonClick = GetComponent<AudioSource>();
     }
 
     private void ChangeSelectedButtonToSettingsPressingCircleB()
     {
-        if (Input.GetButtonDown("Circle/B") && DeviceManager.CurrentPlatform == "PC")
+        if (DeviceManager.CurrentPlatform == "PC")
         {
-            ButtonBack();
+            if (Input.GetButtonDown("Circle/B") && panelSettings.gameObject.activeSelf)
+            {
+                ButtonBack();
+            }
         }
     }
 
@@ -159,16 +180,45 @@ public class PauseManager : MonoBehaviour
     {
         if (DeviceManager.CurrentPlatform == "PC")
         {
-            if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Options/Settings")) && !isGamePaused)
+            if (finalScreens.Screens[1].gameObject.activeSelf)
             {
-                ButtonPauseGame();
+                if (PressEscapeOrOptions())
+                {
+                    ButtonPauseGame();
+
+                    EventSystemGame.OnChangeSelectedButtonToResume?.Invoke();
+                }
             }
 
-            else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Options/Settings")) && isGamePaused)
+            else
             {
-                ButtonResumeGame();
+                if (Input.GetButtonDown("Circle/B") && isGamePaused && !panelSettings.gameObject.activeSelf)
+                {
+                    ButtonResumeGame();
+                }
+
+                if (PressEscapeOrOptions() && !isGamePaused)
+                {
+                    ButtonPauseGame();
+                }
+
+                else if (PressEscapeOrOptions() && isGamePaused && !panelSettings.gameObject.activeSelf)
+                {
+                    ButtonResumeGame();
+                }
+
+                else if (PressEscapeOrOptions() && isGamePaused && panelSettings.gameObject.activeSelf)
+                {
+                    ButtonBack();
+                    ButtonResumeGame();
+                }
             }
         }
+    }
+
+    public bool PressEscapeOrOptions()
+    {
+        return Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Options/Settings");
     }
 
     private IEnumerator LoadSceneAfterButtonClick()
