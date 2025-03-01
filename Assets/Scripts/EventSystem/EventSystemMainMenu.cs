@@ -14,11 +14,10 @@ public class EventSystemMainMenu : MonoBehaviour
 
     private bool ignoreNextSelectionSound = false;
 
-
     private static event Action onChangeSelectedButtonToSliderMusic;
-    public static Action OnChangeSelectedButtonToSliderMusic { get => onChangeSelectedButtonToSliderMusic; set => onChangeSelectedButtonToSliderMusic = value; }
-
     private static event Action onChangeSelectedButtonToSettings;
+
+    public static Action OnChangeSelectedButtonToSliderMusic { get => onChangeSelectedButtonToSliderMusic; set => onChangeSelectedButtonToSliderMusic = value; }
     public static Action OnChangeSelectedButtonToSettings { get => onChangeSelectedButtonToSettings; set => onChangeSelectedButtonToSettings = value; }
 
 
@@ -33,6 +32,7 @@ public class EventSystemMainMenu : MonoBehaviour
         InitializeSelectedButton();
         SuscribeToGameManagerEvents();
         SuscribeToOwnEvents();
+        SuscribeToMainMenuButtonsEvents();
     }
 
     // Simulacion de Update
@@ -45,6 +45,7 @@ public class EventSystemMainMenu : MonoBehaviour
     {
         UnsuscribeToGameManagerEvents();
         UnsuscribeToOwnEvents();
+        UnsuscribeToMainMenuButtonsEvents();
     }
 
 
@@ -88,6 +89,21 @@ public class EventSystemMainMenu : MonoBehaviour
     {
         onChangeSelectedButtonToSliderMusic -= ChangeSelectedButtonToSliderMusic;
         onChangeSelectedButtonToSettings -= ChangeSelectedButtonToSettings;
+    }
+
+    private void SuscribeToMainMenuButtonsEvents()
+    {
+        MainMenu.OnButtonPlayOrExitToDestroyEventSystemMainMenu += DestroyThisGameObject;
+    }
+
+    private void UnsuscribeToMainMenuButtonsEvents()
+    {
+        MainMenu.OnButtonPlayOrExitToDestroyEventSystemMainMenu -= DestroyThisGameObject;
+    }
+
+    private void DestroyThisGameObject()
+    {
+        Destroy(gameObject);
     }
 
     private void ChangeSelectedButtonToSliderMusic()

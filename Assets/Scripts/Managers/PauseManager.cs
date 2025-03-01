@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
 
 public class PauseManager : MonoBehaviour
 {
@@ -15,7 +16,11 @@ public class PauseManager : MonoBehaviour
     private Button buttonPause;
     private AudioSource buttonClick;
 
+    private static event Action onButtonMainMenuOrExitToDestroyEventSystemGame;
+
     private bool isGamePaused = false;
+
+    public static Action OnButtonMainMenuOrExitToDestroyEventSystemGame { get => onButtonMainMenuOrExitToDestroyEventSystemGame; set => onButtonMainMenuOrExitToDestroyEventSystemGame = value; }
 
 
     void Awake()
@@ -111,6 +116,8 @@ public class PauseManager : MonoBehaviour
 
     public void ButtonMainMenu()
     {
+        onButtonMainMenuOrExitToDestroyEventSystemGame?.Invoke();
+
         GameManager.Instance.ChangeStateTo(GameState.Menu);
         Time.timeScale = 1f;
         StartCoroutine(LoadSceneAfterButtonClick());
@@ -118,6 +125,9 @@ public class PauseManager : MonoBehaviour
 
     public void ButtonExit()
     {
+        onButtonMainMenuOrExitToDestroyEventSystemGame?.Invoke();
+
+        Time.timeScale = 1f;
         StartCoroutine(CloseGameAfterClickButton());
     }
 

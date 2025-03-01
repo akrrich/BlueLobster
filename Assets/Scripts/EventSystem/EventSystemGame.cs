@@ -39,6 +39,8 @@ public class EventSystemGame : MonoBehaviour
         SuscribeToGameManagerEvents();
         SuscribeToOwnEvents();
         SuscribeToPlayerEvents();
+        SuscribeToPauseManagerEvents();
+        SuscribeToFinalScreensEvents();
     }
 
     // Simulacion de Update
@@ -52,6 +54,8 @@ public class EventSystemGame : MonoBehaviour
         UnsuscribeToGameManagerEvents();
         UnsuscribeToOwnEvents();
         UnsuscribeToPlayerEvents();
+        UnsuscribeToPauseManagerEvents();
+        UnsuscribeToFinalScreensEvents();
     }
 
 
@@ -113,6 +117,31 @@ public class EventSystemGame : MonoBehaviour
         PlayerEvents.OnPlayerDefeated -= ChangeSelectedButtonToRestartGameInLooseScreenFromFinalScreens;
     }
 
+    private void SuscribeToPauseManagerEvents()
+    {
+        PauseManager.OnButtonMainMenuOrExitToDestroyEventSystemGame += DestroyThisGameObject;
+    }
+
+    private void UnsuscribeToPauseManagerEvents()
+    {
+        PauseManager.OnButtonMainMenuOrExitToDestroyEventSystemGame -= DestroyThisGameObject;
+    }
+
+    private void SuscribeToFinalScreensEvents()
+    {
+        FinalScreens.OnButtonMainMenuOrPlayAgainToDestroyEventSystemGame += DestroyThisGameObject;
+    }
+
+    private void UnsuscribeToFinalScreensEvents()
+    {
+        FinalScreens.OnButtonMainMenuOrPlayAgainToDestroyEventSystemGame -= DestroyThisGameObject;
+    }
+
+    private void DestroyThisGameObject()
+    {
+        Destroy(gameObject);    
+    }
+
     private void ChangeSelectedButtonToSliderMusic()
     {
         eventSystem.SetSelectedGameObject(optionsSettings[0].gameObject);
@@ -136,7 +165,7 @@ public class EventSystemGame : MonoBehaviour
 
     private void ChangeSelectedButtonToRestartGameInLooseScreenFromFinalScreens()
     {
-        eventSystem.SetSelectedGameObject(finalScreens.ButtonsLose[0].gameObject);
+        eventSystem.SetSelectedGameObject(finalScreens.ButtonsLoseScreen[0].gameObject);
         ignoreNextSelectionSound = true;
     }
 

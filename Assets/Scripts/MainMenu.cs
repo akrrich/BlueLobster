@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,10 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private Button[] buttonsClickOnce;
 
     private AudioSource buttonClick;
+
+    private static event Action onButtonPlayOrExitToDestroyEventSystemMainMenu;
+
+    public static Action OnButtonPlayOrExitToDestroyEventSystemMainMenu { get => onButtonPlayOrExitToDestroyEventSystemMainMenu; set => onButtonPlayOrExitToDestroyEventSystemMainMenu = value; }
 
 
     void Awake()
@@ -32,6 +37,8 @@ public class MainMenu : MonoBehaviour
 
     public void ButtonPlayGame()
     {
+        onButtonPlayOrExitToDestroyEventSystemMainMenu?.Invoke();
+
         StartCoroutine(LoadSceneAfterButtonClick());
     }
 
@@ -48,6 +55,8 @@ public class MainMenu : MonoBehaviour
 
     public void ButtonExit()
     {
+        onButtonPlayOrExitToDestroyEventSystemMainMenu?.Invoke();
+
         StartCoroutine(CloseGameAfterClickButton());
     }
 

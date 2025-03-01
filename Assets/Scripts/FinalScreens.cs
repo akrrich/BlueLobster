@@ -12,11 +12,14 @@ public class FinalScreens : MonoBehaviour
 
     private static event Action onPauseButtonDisabled;
 
-    public Button[] ButtonsLose { get => buttonsLoseScreen; set => buttonsLoseScreen = value; }
+    private static event Action onButtonMainMenuOrPlayAgainToDestroyEventSystemGame;
 
+    public Button[] ButtonsLoseScreen { get => buttonsLoseScreen; set => buttonsLoseScreen = value; }
     public Image[] Screens { get => screens; }
 
     public static Action OnPauseButtonDisabled { get => onPauseButtonDisabled; set => onPauseButtonDisabled = value; }
+
+    public static Action OnButtonMainMenuOrPlayAgainToDestroyEventSystemGame { get => onButtonMainMenuOrPlayAgainToDestroyEventSystemGame; set => onButtonMainMenuOrPlayAgainToDestroyEventSystemGame = value; }
 
 
     void Awake()
@@ -33,6 +36,8 @@ public class FinalScreens : MonoBehaviour
 
     public void ButtonRestartGame()
     {
+        onButtonMainMenuOrPlayAgainToDestroyEventSystemGame?.Invoke();
+
         StartCoroutine(LoadSceneAfterButtonClick(buttonsLoseScreen[0], "Game"));
 
         CursorController.Instance.UnsuscribeCursorControllerToPlayerEvents();
@@ -41,6 +46,8 @@ public class FinalScreens : MonoBehaviour
 
     public void ButtonMainMenu()
     {
+        onButtonMainMenuOrPlayAgainToDestroyEventSystemGame?.Invoke();
+
         StartCoroutine(LoadSceneAfterButtonClick(buttonsLoseScreen[1], "MainMenu"));
         GameManager.Instance.ChangeStateTo(GameState.Menu);
 
