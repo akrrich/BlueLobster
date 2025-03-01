@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3138571506151514924}
   - component: {fileID: 8344543394167758751}
   - component: {fileID: 3347516152124672341}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: shadow
   m_TagString: Objeto
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 6664923525267743517}
   - component: {fileID: 3794370972563861483}
   - component: {fileID: 7344119193904654421}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: vase
   m_TagString: Objeto
   m_Icon: {fileID: 0}
@@ -413,7 +413,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1321736845448808728}
   - component: {fileID: 8607459196116337794}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: alert
   m_TagString: Untagged
   m_Icon: {fileID: 0}

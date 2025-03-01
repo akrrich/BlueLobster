@@ -85,17 +85,28 @@ public class Props : MonoBehaviour
 
     public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
     {
+        //fisicas
+
         shadow.gameObject.SetActive(false);
         boxCollider.isTrigger = false; // Para el enemigo cuando se convierte en objeto.
         rb.simulated = false;
         rb.velocity = Vector2.zero;   
 
+        //posicionamiento de objeto en game object vacio
+
         if (weight == 1) transform.position = objectPositionHeavy.position;
         if (weight == 0) transform.position = objectPositionLight.position;
         pickedUp = true;
+
+        //posicionamiento respecto a mano derecha
+
         transform.SetParent(rightHand);
-        transform.localPosition = new Vector3(-0.01f, -0.24f, 0);
-        spriteRenderer.sortingOrder = 6;
+        if(weight == 0)transform.localPosition = new Vector3(-0.01f, -0.24f, 0);
+        else transform.localPosition = new Vector3(-0.011f, -0.232f, 0);
+
+        //animaciones y sorting layer
+
+        spriteRenderer.sortingOrder = 5;
         Animations();
 
         StartCoroutine(CanThrowTheObject());
@@ -159,17 +170,27 @@ public class Props : MonoBehaviour
 
     private IEnumerator ThrowAnim(int direction)
     {
-        yield return new WaitForSeconds(0.40f);
+        //realiza animacion de lanzamiento
+
+        yield return new WaitForSeconds(0.10f);
         pickedUp = false;
+
+        //sonido
+
         if (throwSound != null)
         {
             throwSound.Play();
         }
 
+        //parte de fisicas
+
         gameObject.layer = 6;
         rb.isKinematic = false;
         rb.simulated = true;
         transform.SetParent(null);
+
+
+        //direccion y lanzamiento
 
         Vector2 throwDirection = Vector2.zero;
 
@@ -260,6 +281,7 @@ public class Props : MonoBehaviour
     {
         anim.SetBool("Throw", hasBeenThrown);
 
-        anim.SetBool("Rotate", pickedUp == true);
+        if(weight == 0) anim.SetBool("Rotate", pickedUp == true);
+        if(weight == 1) anim.SetBool("Rotate_heavy", pickedUp == true);
     }
 }

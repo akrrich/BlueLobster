@@ -11,12 +11,12 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - objeto
   - Water
   - UI
   - throwObject
-  - 
-  - 
+  - player
+  - enemy
   - 
   - 
   - 

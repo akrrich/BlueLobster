@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1436301887794631304}
   - component: {fileID: 3472051622829478643}
   - component: {fileID: 4737069892116895189}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: broken box
   m_TagString: Objeto
   m_Icon: {fileID: 0}
@@ -307,7 +307,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5383299924166298556}
   - component: {fileID: 1537329468272200986}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Alert
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 4340410779868927936}
   - component: {fileID: 2324674451615581193}
   - component: {fileID: 1350183388074347464}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: shadow
   m_TagString: Objeto
   m_Icon: {fileID: 0}

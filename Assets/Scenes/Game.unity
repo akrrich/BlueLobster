@@ -7156,7 +7156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdb33391039d31240a4a1729b751dcc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rightHandPosition: {fileID: 0}
   detectionLayer:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -7845,7 +7844,7 @@ Transform:
   m_GameObject: {fileID: 777755130}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.6300049, y: 0.47, z: 0}
+  m_LocalPosition: {x: -0.1, y: 1.13, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9181,7 +9180,7 @@ Transform:
   m_GameObject: {fileID: 1071512851}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08, y: 0.75, z: 0}
+  m_LocalPosition: {x: 0.07, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15375,7 +15374,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4559031673504656241, guid: 70f1a44abe7bba5479a8ea3568d28fd8, type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4902343871970045128, guid: 70f1a44abe7bba5479a8ea3568d28fd8, type: 3}
       propertyPath: m_Name
@@ -15383,7 +15382,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4902343871970045128, guid: 70f1a44abe7bba5479a8ea3568d28fd8, type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7344119193904654421, guid: 70f1a44abe7bba5479a8ea3568d28fd8, type: 3}
       propertyPath: alert
