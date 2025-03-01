@@ -29,11 +29,6 @@ public class EventSystemGame : MonoBehaviour
 
     void Awake()
     {
-        DisableScriptIfCurrentDeviceIsMobile();
-    }
-
-    void Start()
-    {
         GetComponents();
         InitializeSelectedButton();
         SuscribeToGameManagerEvents();
@@ -58,14 +53,6 @@ public class EventSystemGame : MonoBehaviour
         UnsuscribeToFinalScreensEvents();
     }
 
-
-    private void DisableScriptIfCurrentDeviceIsMobile()
-    {
-        if (DeviceManager.CurrentPlatform == "Mobile")
-        {
-            Destroy(this);
-        }
-    }
 
     private void GetComponents()
     {

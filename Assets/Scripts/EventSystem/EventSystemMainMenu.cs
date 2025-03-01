@@ -23,11 +23,6 @@ public class EventSystemMainMenu : MonoBehaviour
 
     void Awake()
     {
-        DisableScriptIfCurrentDeviceIsMobile();
-    }
-
-    void Start()
-    {
         GetComponents();
         InitializeSelectedButton();
         SuscribeToGameManagerEvents();
@@ -48,14 +43,6 @@ public class EventSystemMainMenu : MonoBehaviour
         UnsuscribeToMainMenuButtonsEvents();
     }
 
-
-    private void DisableScriptIfCurrentDeviceIsMobile()
-    {
-        if (DeviceManager.CurrentPlatform == "Mobile")
-        {
-            Destroy(this);
-        }
-    }
 
     private void GetComponents()
     {

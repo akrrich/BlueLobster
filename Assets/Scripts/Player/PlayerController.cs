@@ -4,7 +4,6 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     private Props currentProp;
-    private JoystickTouch joystickTouch;
     private ShadowPlayer shadow;
 
     private Rigidbody2D rb;
@@ -22,16 +21,18 @@ public class PlayerController : MonoBehaviour
     private int minHealth = 1;
     private int UPDOWNdirection = 0;
     private int damage = 1;
+    private int lastWeight = 0;
 
     private float radius = 1f;
     private float speed = 8;
-    private int lastWeight = 0;
 
     private bool isAlive = true;
     private bool canPunch = false;
     private bool isPunching = false;
     private bool isHitting = false;
     private bool isThrowing = false;
+
+    public Animator RightHandAnim { get => rightHandAnim; }
 
     public bool IsAlive { get => isAlive; }
 
@@ -48,7 +49,7 @@ public class PlayerController : MonoBehaviour
     {
         InputsForControllerAndPC();
         Animations();
-        Animations_Shadow();
+        AnimationsShadow();
     }
 
     // Simulacion de FixedUpdate
@@ -107,18 +108,16 @@ public class PlayerController : MonoBehaviour
 
     private void GetComponents()
     {
-        joystickTouch = FindObjectOfType<JoystickTouch>();
-
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
         propPositionHeavy = transform.Find("PropPositionHeavy").GetComponent<Transform>();
         propPositionLight = transform.Find("PropPositionLight").GetComponent<Transform>();
 
-        rightHandAnim = transform.Find("Right hand").gameObject.GetComponentInChildren<Animator>();
-        leftHandAnim = transform.Find("Left hand").gameObject.GetComponentInChildren<Animator>();
+        rightHandAnim = transform.Find("Right hand").GetComponent<Animator>();
+        leftHandAnim = transform.Find("Left hand").GetComponent<Animator>();
 
-        shadow = transform.Find("Shadow player").GetComponentInChildren<ShadowPlayer>();
+        shadow = transform.Find("Shadow player").GetComponent<ShadowPlayer>();
     }
 
     private void SubscribeToGameManagerEvents()
@@ -157,7 +156,7 @@ public class PlayerController : MonoBehaviour
 
     private void Movement()
     {
-        Vector2 direction = DeviceManager.GetMovementInput(joystickTouch.LastDirection);
+        Vector2 direction = DeviceManager.GetMovementInput();
         rb.velocity = direction.normalized * speed;
 
         if (direction.x > 0.1f) // Derecha
@@ -189,29 +188,26 @@ public class PlayerController : MonoBehaviour
         {
             if (Time.timeScale == 1f)
             {
-                int leftClick = 0; int rightClick = 1;
-
-                if (Input.GetMouseButtonDown(rightClick) || Input.GetButtonDown("Circle/B"))
+                if (DeviceManager.GetRightClickOrCircleB())
                 {
                     PickUp();
                 }
 
-                if (Input.GetMouseButtonDown(leftClick) || Input.GetButtonDown("Square/X"))
+                if (DeviceManager.GetLeftClickOrSquareX())
                 {
                     Hit();
                     StartCoroutine(throwing());
                 }
 
 
-                if (Input.GetMouseButtonDown(rightClick) || Input.GetButtonDown("Circle/B"))
+                if (DeviceManager.GetRightClickOrCircleB())
                 {
                     Throw();
                 }
 
-                //solucionar esto
-                if (Input.GetMouseButtonDown(leftClick) || Input.GetButtonDown("Square/X"))
+                if (DeviceManager.GetLeftClickOrSquareX())
                 {
-                    Punch();
+                    //Punch();
                 }
             }
         }
@@ -271,11 +267,11 @@ public class PlayerController : MonoBehaviour
             if (currentProp.durability <= 0) isThrowing = false;
         }
 
-        bool isHoldingHeavy = currentProp != null && currentProp.Weight == 1 && isHitting == false && isThrowing == false;
-        bool isHoldingLight = currentProp != null && currentProp.Weight == 0 && isHitting == false && isThrowing == false;
+        bool isHoldingHeavy = currentProp != null && currentProp.Weight == 1 && !isHitting && !isThrowing;
+        bool isHoldingLight = currentProp != null && currentProp.Weight == 0 && !isHitting && !isThrowing;
 
 
-        if (health >= minHealth)
+        if (isAlive)
         {
             //animacion running e idle player
             anim.SetBool("Running", isMoving);
@@ -298,19 +294,20 @@ public class PlayerController : MonoBehaviour
             leftHandAnim.SetBool("Holding_light", isHoldingLight);
 
             //animacion tirar light object manos
-            rightHandAnim.SetBool("Throw_light", isThrowing == true && lastWeight == 0);
-            leftHandAnim.SetBool("Throw_light", isThrowing == true && lastWeight == 0);
+            rightHandAnim.SetBool("Throw_light", isThrowing && lastWeight == 0);
+            leftHandAnim.SetBool("Throw_light", isThrowing && lastWeight == 0);
 
             //animacion golpear con light object manos
-            rightHandAnim.SetBool("Hit_light", isHitting == true && lastWeight == 0);
-            leftHandAnim.SetBool("Hit_light", isHitting == true && lastWeight == 0);
+            rightHandAnim.SetBool("Hit_light", isHitting && lastWeight == 0);
+            leftHandAnim.SetBool("Hit_light", isHitting && lastWeight == 0);
 
             //animacion tirar heavy object manos
-            rightHandAnim.SetBool("Throw_heavy", isThrowing == true && lastWeight == 1);
-            leftHandAnim.SetBool("Throw_heavy", isThrowing == true && lastWeight == 1);
+            rightHandAnim.SetBool("Throw_heavy", isThrowing && lastWeight == 1);
+            leftHandAnim.SetBool("Throw_heavy", isThrowing && lastWeight == 1);
 
-            rightHandAnim.SetBool("Hit_heavy", isHitting == true && lastWeight == 1);
-            leftHandAnim.SetBool("Hit_heavy", isHitting == true && lastWeight == 1);
+            //animacion golpear con heavy object manos
+            rightHandAnim.SetBool("Hit_heavy", isHitting && lastWeight == 1);
+            leftHandAnim.SetBool("Hit_heavy", isHitting && lastWeight == 1);
 
             // agregar animacion de piña 
         }
@@ -321,7 +318,7 @@ public class PlayerController : MonoBehaviour
         }
     }
     
-    private void Animations_Shadow()
+    private void AnimationsShadow()
     {
         //animacion de sombra idle
         if (rb.velocity.x == 0) shadow.animations(1, transform.localScale, 1);
@@ -330,8 +327,8 @@ public class PlayerController : MonoBehaviour
         if (rb.velocity.x != 0) shadow.animations(2, transform.localScale, 2);
 
         //animacion de sombra lanzamiento
-        if (isThrowing == true && rb.velocity.x == 0) shadow.animations(3, transform.localScale, 3);
-        if (isThrowing == true && rb.velocity.x != 0) shadow.animations(9, transform.localScale, 3);
+        if (isThrowing && rb.velocity.x == 0) shadow.animations(3, transform.localScale, 3);
+        if (isThrowing && rb.velocity.x != 0) shadow.animations(9, transform.localScale, 3);
 
         //animacion de sombra sostener objeto idle
         if (currentProp != null && currentProp.Weight == 1 && rb.velocity.x == 0) shadow.animations(1, transform.localScale, 4);
@@ -357,7 +354,7 @@ public class PlayerController : MonoBehaviour
         {
             PlayerEvents.OnPlayerDefeated?.Invoke();
 
-            // provisorio el desactivar el objeto
+            // provisorio el desactivar el objeto (esto tira error por ahora)
             gameObject.SetActive(false);
         }
     }

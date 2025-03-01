@@ -178,7 +178,7 @@ public class PauseManager : MonoBehaviour
     {
         if (DeviceManager.CurrentPlatform == "PC")
         {
-            if (Input.GetButtonDown("Circle/B") && panelSettings.gameObject.activeSelf)
+            if (DeviceManager.GetButtonCircleB() && panelSettings.gameObject.activeSelf)
             {
                 ButtonBack();
             }
@@ -191,24 +191,24 @@ public class PauseManager : MonoBehaviour
         {
             if (finalScreens.Screens[1].gameObject.activeSelf)
             {
-                if (PressEscapeOrOptions() && !isGamePaused)
+                if (DeviceManager.PressEscapeOrOptions() && !isGamePaused)
                 {
                     ButtonPauseGame();
 
                     EventSystemGame.OnChangeSelectedButtonToResume?.Invoke();
                 }
 
-                else if (Input.GetButtonDown("Circle/B") && isGamePaused && !panelSettings.gameObject.activeSelf)
+                else if (DeviceManager.GetButtonCircleB() && isGamePaused && !panelSettings.gameObject.activeSelf)
                 {
                     ButtonResumeGame();
                 }
 
-                else if (PressEscapeOrOptions() && isGamePaused && !panelSettings.gameObject.activeSelf)
+                else if (DeviceManager.PressEscapeOrOptions() && isGamePaused && !panelSettings.gameObject.activeSelf)
                 {
                     ButtonResumeGame();
                 }
 
-                else if (PressEscapeOrOptions() && isGamePaused && panelSettings.gameObject.activeSelf)
+                else if (DeviceManager.PressEscapeOrOptions() && isGamePaused && panelSettings.gameObject.activeSelf)
                 {
                     ButtonBack();
                     ButtonResumeGame();
@@ -217,33 +217,28 @@ public class PauseManager : MonoBehaviour
 
             else
             {
-                if (PressEscapeOrOptions() && !isGamePaused)
+                if (DeviceManager.PressEscapeOrOptions() && !isGamePaused)
                 {
                     ButtonPauseGame();
                 }
 
-                else if (Input.GetButtonDown("Circle/B") && isGamePaused && !panelSettings.gameObject.activeSelf)
+                else if (DeviceManager.GetButtonCircleB() && isGamePaused && !panelSettings.gameObject.activeSelf)
                 {
                     ButtonResumeGame();
                 }
 
-                else if (PressEscapeOrOptions() && isGamePaused && !panelSettings.gameObject.activeSelf)
+                else if (DeviceManager.PressEscapeOrOptions() && isGamePaused && !panelSettings.gameObject.activeSelf)
                 {
                     ButtonResumeGame();
                 }
 
-                else if (PressEscapeOrOptions() && isGamePaused && panelSettings.gameObject.activeSelf)
+                else if (DeviceManager.PressEscapeOrOptions() && isGamePaused && panelSettings.gameObject.activeSelf)
                 {
                     ButtonBack();
                     ButtonResumeGame();
                 }
             }
         }
-    }
-
-    public bool PressEscapeOrOptions()
-    {
-        return Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Options/Settings");
     }
 
     private IEnumerator LoadSceneAfterButtonClick()

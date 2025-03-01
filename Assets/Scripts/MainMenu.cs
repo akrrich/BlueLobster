@@ -81,7 +81,7 @@ public class MainMenu : MonoBehaviour
     {
         if (DeviceManager.CurrentPlatform == "PC")
         {
-            if (Input.GetButtonDown("Circle/B") && panelSettings.gameObject.activeSelf)
+            if (DeviceManager.GetButtonCircleB() && panelSettings.gameObject.activeSelf)
             {
                 ButtonBack();
             }

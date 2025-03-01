@@ -11,11 +11,11 @@ public class DeviceManager
         GetCurrentPlatform();
     }
 
-    public static Vector2 GetMovementInput(Vector2 defaultInput)
+    public static Vector2 GetMovementInput()
     {
         if (currentPlatform == "Mobile")
         {
-            return new Vector2(defaultInput.x, defaultInput.y);
+            return new Vector2(JoystickTouch.LastDirection.x, JoystickTouch.LastDirection.y);
         }
 
         else
@@ -27,7 +27,32 @@ public class DeviceManager
         }
     }
 
-    public static string GetCurrentPlatform()
+    public static bool GetButtonCircleB()
+    {
+        return Input.GetButtonDown("Circle/B");
+    }
+
+    public static bool PressEscapeOrOptions()
+    {
+        return Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Options/Settings");
+    }
+
+    public static bool GetRightClickOrCircleB()
+    {
+        int rightClick = 1;
+
+        return Input.GetMouseButtonDown(rightClick) || Input.GetButtonDown("Circle/B");
+    }
+
+    public static bool GetLeftClickOrSquareX()
+    {
+        int leftClick = 0;
+
+        return Input.GetMouseButtonDown(leftClick) || Input.GetButtonDown("Square/X");
+    }
+
+
+    private static string GetCurrentPlatform()
     {
         switch (Application.platform)
         {

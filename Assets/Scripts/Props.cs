@@ -10,10 +10,8 @@ public class Props : MonoBehaviour
     private Animator anim;
     private SpriteRenderer spriteRenderer;
     private SpriteRenderer alert;
-    private BoxCollider2D boxCollider;
-
-    private Transform rightHand;
     private SpriteRenderer shadow;
+    private BoxCollider2D boxCollider;
 
     [SerializeField] private int damage;
     [SerializeField] private float velocity;
@@ -85,9 +83,16 @@ public class Props : MonoBehaviour
 
     public void PickObject(Transform objectPositionLight, Transform objectPositionHeavy)
     {
+        pickedUp = true;
+
+        // verificacion es necesaria por el momento, ya que la sombra no la tiene el enemigo todavia
+        if (shadow != null)
+        {
+            shadow.gameObject.SetActive(false);
+        }
+
         //fisicas
 
-        shadow.gameObject.SetActive(false);
         boxCollider.isTrigger = false; // Para el enemigo cuando se convierte en objeto.
         rb.simulated = false;
         rb.velocity = Vector2.zero;   
@@ -96,13 +101,12 @@ public class Props : MonoBehaviour
 
         if (weight == 1) transform.position = objectPositionHeavy.position;
         if (weight == 0) transform.position = objectPositionLight.position;
-        pickedUp = true;
 
         //posicionamiento respecto a mano derecha
 
-        transform.SetParent(rightHand);
-        if(weight == 0)transform.localPosition = new Vector3(-0.01f, -0.24f, 0);
-        else transform.localPosition = new Vector3(-0.011f, -0.232f, 0);
+        transform.SetParent(playerController.RightHandAnim.transform);
+        if (weight == 0) transform.localPosition = new Vector3(-0.01f, -0.24f, 0);
+        if (weight == 1) transform.localPosition = new Vector3(-0.011f, -0.232f, 0);
 
         //animaciones y sorting layer
 
@@ -114,73 +118,8 @@ public class Props : MonoBehaviour
 
     public void ThrowObject(int direction)
     {
-        Animations();
-
-        StartCoroutine(ThrowAnim(direction));
-    }
-
-    public void HitWithObject()
-    {
-        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, radius, LayerMask.NameToLayer("Everything"));
-
-        foreach (var obj in objectsInRange)
-        {
-            if (obj.CompareTag("Enemy"))
-            {
-                Enemy currentEnemy = obj.GetComponent<Enemy>();
-
-                if (currentEnemy != null)
-                {
-                    durability--;
-
-                    if (durability < minDurability)
-                    {
-                        DestroyThisGameObject();
-                    }
-
-                    currentEnemy.GetDamage(damage);
-                }
-            }
-        }
-    }
-
-    private void GetComponents()
-    {
-        playerController = FindObjectOfType<PlayerController>();
-
-        rb = GetComponent<Rigidbody2D>();
-        throwSound = GetComponent<AudioSource>(); 
-        anim = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        alert = transform.Find("Alert")?.GetComponent<SpriteRenderer>();
-        boxCollider = GetComponent<BoxCollider2D>();
-
-        rightHand = playerController.transform.Find("Right hand");
-        shadow = transform.Find("shadow")?.gameObject.GetComponent<SpriteRenderer>();
-    }
-
-    private IEnumerator CanThrowTheObject()
-    {
-        float waitingTime = 0.125f;
-
-        yield return new WaitForSeconds(waitingTime);
-
-        canThrow = true;
-    }
-
-    private IEnumerator ThrowAnim(int direction)
-    {
-        //realiza animacion de lanzamiento
-
-        yield return new WaitForSeconds(0.10f);
         pickedUp = false;
-
-        //sonido
-
-        if (throwSound != null)
-        {
-            throwSound.Play();
-        }
+        throwSound.Play();
 
         //parte de fisicas
 
@@ -211,6 +150,53 @@ public class Props : MonoBehaviour
         rb.AddForce(throwDirection * velocity, ForceMode2D.Impulse);
         hasBeenThrown = true;
         Animations();
+    }
+
+    public void HitWithObject()
+    {
+        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, radius, LayerMask.NameToLayer("Everything"));
+
+        foreach (var obj in objectsInRange)
+        {
+            if (obj.CompareTag("Enemy"))
+            {
+                Enemy currentEnemy = obj.GetComponent<Enemy>();
+
+                if (currentEnemy != null)
+                {
+                    durability--;
+
+                    currentEnemy.GetDamage(damage);
+
+                    if (durability < minDurability)
+                    {
+                        DestroyThisGameObject();
+                    }
+                }
+            }
+        }
+    }
+
+    private void GetComponents()
+    {
+        playerController = FindObjectOfType<PlayerController>();
+
+        rb = GetComponent<Rigidbody2D>();
+        throwSound = GetComponent<AudioSource>(); 
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        alert = transform.Find("Alert")?.GetComponent<SpriteRenderer>();
+        shadow = transform.Find("shadow")?.GetComponent<SpriteRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
+    }
+
+    private IEnumerator CanThrowTheObject()
+    {
+        // Esperar un frame 
+
+        float waitingTime = 0f;
+        yield return new WaitForSeconds(waitingTime);
+        canThrow = true;
     }
 
     private void HandleEnterCollisions(Collision2D collision)
@@ -281,7 +267,7 @@ public class Props : MonoBehaviour
     {
         anim.SetBool("Throw", hasBeenThrown);
 
-        if(weight == 0) anim.SetBool("Rotate", pickedUp == true);
-        if(weight == 1) anim.SetBool("Rotate_heavy", pickedUp == true);
+        anim.SetBool("Rotate", pickedUp && weight == 0);
+        anim.SetBool("Rotate_heavy", pickedUp && weight == 1);
     }
 }

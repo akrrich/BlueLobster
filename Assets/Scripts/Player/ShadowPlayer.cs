@@ -7,12 +7,11 @@ public class ShadowPlayer : MonoBehaviour
     private Animator leftHandAnim;
 
 
-    private void Awake()
+    void Awake()
     {
-        anim = GetComponent<Animator>();
-        rightHandAnim = transform.Find("Right hand shadow").gameObject.GetComponentInChildren<Animator>();
-        leftHandAnim = transform.Find("Left hand shadow").gameObject.GetComponentInChildren<Animator>();
+        GetComponents();
     }
+
 
     public void animations(int choice, Vector2 localScale, int choice_hands)
     {
@@ -36,10 +35,15 @@ public class ShadowPlayer : MonoBehaviour
 
         rightHandAnim.SetBool("Holding_light", choice_hands == 5);
         leftHandAnim.SetBool("Holding_light", choice_hands == 5);
+    }
 
 
+    private void GetComponents()
+    {
+        anim = GetComponent<Animator>();
 
-
+        rightHandAnim = transform.Find("Right hand shadow").GetComponentInChildren<Animator>();
+        leftHandAnim = transform.Find("Left hand shadow").GetComponentInChildren<Animator>();
     }
 }
 

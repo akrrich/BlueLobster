@@ -6,9 +6,9 @@ public class JoystickTouch : MonoBehaviour, IDragHandler, IPointerDownHandler, I
     [SerializeField] private RectTransform joystickHandle;
     [SerializeField] private RectTransform joystickBackground;
 
-    private Vector2 lastDirection;
+    private static Vector2 lastDirection;
 
-    public Vector2 LastDirection { get => lastDirection; }
+    public static Vector2 LastDirection { get => lastDirection; }
 
 
     void Awake()
