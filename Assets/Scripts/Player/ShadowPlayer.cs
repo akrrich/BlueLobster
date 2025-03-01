@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class ShadowPlayer : MonoBehaviour
 {
-
     private Animator anim;
     private Animator rightHandAnim;
     private Animator leftHandAnim;
+
 
     private void Awake()
     {

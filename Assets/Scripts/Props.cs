@@ -26,6 +26,7 @@ public class Props : MonoBehaviour
     private bool canThrow = false;
     private bool hasBeenThrown = false;
     private bool pickedUp = false;
+
     public int Weight { get => weight; }
 
     public bool CanThorw { get => canThrow; }
@@ -144,7 +145,7 @@ public class Props : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
 
         rightHand = playerController.transform.Find("Right hand");
-        shadow = transform.Find("shadow").gameObject.GetComponent<SpriteRenderer>();
+        shadow = transform.Find("shadow")?.gameObject.GetComponent<SpriteRenderer>();
     }
 
     private IEnumerator CanThrowTheObject()
@@ -156,7 +157,7 @@ public class Props : MonoBehaviour
         canThrow = true;
     }
 
-    IEnumerator ThrowAnim(int direction)
+    private IEnumerator ThrowAnim(int direction)
     {
         yield return new WaitForSeconds(0.40f);
         pickedUp = false;

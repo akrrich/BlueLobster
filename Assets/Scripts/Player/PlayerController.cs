@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     private Props currentProp;
     private JoystickTouch joystickTouch;
+    private ShadowPlayer shadow;
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -14,9 +15,6 @@ public class PlayerController : MonoBehaviour
 
     private Transform propPositionHeavy;
     private Transform propPositionLight;
-    [SerializeField] private Transform rightHandPosition;
-
-    private bool isThrowing = false;
 
     [SerializeField] private LayerMask detectionLayer;
 
@@ -32,8 +30,7 @@ public class PlayerController : MonoBehaviour
     private bool canPunch = false;
     private bool isPunching = false;
     private bool isHitting = false;
-
-    private ShadowPlayer shadow;
+    private bool isThrowing = false;
 
     public bool IsAlive { get => isAlive; }
 
@@ -260,7 +257,7 @@ public class PlayerController : MonoBehaviour
     {
         bool isMoving = rb.velocity.x != 0 || rb.velocity.y != 0;
 
-        if(currentProp != null)
+        if (currentProp != null)
         {
             if (currentProp.durability <= 0) isThrowing = false;
         }
@@ -315,12 +312,14 @@ public class PlayerController : MonoBehaviour
         if (currentProp != null && currentProp.Weight == 1 && rb.velocity.x != 0) shadow.animations(2, transform.localScale, 4);
         if (currentProp != null && currentProp.Weight == 0 && rb.velocity.x != 0) shadow.animations(2, transform.localScale, 5);
     }
-    IEnumerator throwing()
+
+    private IEnumerator throwing()
     {
         yield return new WaitForSeconds(0.40f);
         isThrowing = false;
         isHitting = false;
     }
+
     private void CheckIfPlayerIsAlive()
     {
         isAlive = health >= minHealth; 
