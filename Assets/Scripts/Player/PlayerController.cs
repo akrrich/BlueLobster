@@ -188,24 +188,24 @@ public class PlayerController : MonoBehaviour
         {
             if (Time.timeScale == 1f)
             {
-                if (DeviceManager.GetRightClickOrCircleB())
+                if (DeviceManager.GetRightClickOrCircleB()) // Agarrar
                 {
                     PickUp();
                 }
 
-                if (DeviceManager.GetLeftClickOrSquareX())
+                if (DeviceManager.GetLeftClickOrSquareX()) // Golpear con objeto
                 {
                     Hit();
                     StartCoroutine(throwing());
                 }
 
 
-                if (DeviceManager.GetRightClickOrCircleB())
+                if (DeviceManager.GetRightClickOrCircleB()) // Tirar
                 {
                     Throw();
                 }
 
-                if (DeviceManager.GetLeftClickOrSquareX())
+                if (DeviceManager.GetLeftClickOrSquareX()) // Golpear con Puño
                 {
                     //Punch();
                 }
@@ -230,7 +230,7 @@ public class PlayerController : MonoBehaviour
     private void Hit()
     {
         if (currentProp != null)
-        {  
+        {
             currentProp.HitWithObject();
             isHitting = true;
         }
