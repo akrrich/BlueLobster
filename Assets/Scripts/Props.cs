@@ -14,20 +14,23 @@ public class Props : MonoBehaviour
     private BoxCollider2D boxCollider;
 
     [SerializeField] private int damage;
+    [SerializeField] private int durability;
     [SerializeField] private float velocity;
-    [SerializeField] public int durability;
-    [SerializeField] private int weight;
     [SerializeField] private float radius;
+    [SerializeField] private string weight;
 
     private int minDurability = 1;
 
     private bool canThrow = false;
     private bool hasBeenThrown = false;
     private bool pickedUp = false;
+    private bool isHitting = false;
 
-    public int Weight { get => weight; }
+    public string Weight { get => weight; }
 
     public bool CanThorw { get => canThrow; }
+    public bool HasBeenThrown { get => hasBeenThrown; }
+    public bool IsHitting { get => isHitting; }
 
 
     void Awake()
@@ -72,7 +75,8 @@ public class Props : MonoBehaviour
         return null;
     }
 
-    public void SetProperties(int damage, float velocity, int durability, int weight, float radius)
+    // setear las propiedades al enemigo cuando se le asigna el script
+    public void SetProperties(int damage, float velocity, int durability, string weight, float radius)
     {
         this.damage = damage;
         this.velocity = velocity;
@@ -99,14 +103,14 @@ public class Props : MonoBehaviour
 
         //posicionamiento de objeto en game object vacio
 
-        if (weight == 1) transform.position = objectPositionHeavy.position;
-        if (weight == 0) transform.position = objectPositionLight.position;
+        if (weight == "light") transform.position = objectPositionLight.position;
+        if (weight == "heavy") transform.position = objectPositionHeavy.position;
 
         //posicionamiento respecto a mano derecha
 
         transform.SetParent(playerController.RightHandAnim.transform);
-        if (weight == 0) transform.localPosition = new Vector3(-0.01f, -0.24f, 0);
-        if (weight == 1) transform.localPosition = new Vector3(-0.011f, -0.232f, 0);
+        if (weight == "light") transform.localPosition = new Vector3(-0.01f, -0.24f, 0);
+        if (weight == "heavy") transform.localPosition = new Vector3(-0.011f, -0.232f, 0);
 
         //animaciones y sorting layer
 
@@ -116,9 +120,11 @@ public class Props : MonoBehaviour
         StartCoroutine(CanThrowTheObject());
     }
 
-    public void ThrowObject(int direction)
+    public void ThrowObject(int direction, Props currentProp)
     {
         pickedUp = false;
+        hasBeenThrown = true;
+
         throwSound.Play();
 
         //parte de fisicas
@@ -127,7 +133,6 @@ public class Props : MonoBehaviour
         rb.isKinematic = false;
         rb.simulated = true;
         transform.SetParent(null);
-
 
         //direccion y lanzamiento
 
@@ -148,12 +153,15 @@ public class Props : MonoBehaviour
         }
 
         rb.AddForce(throwDirection * velocity, ForceMode2D.Impulse);
-        hasBeenThrown = true;
         Animations();
+
+        StartCoroutine(SetCurrentPropInNull());
     }
 
     public void HitWithObject()
     {
+        isHitting = true;
+
         Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(transform.position, radius, LayerMask.NameToLayer("Everything"));
 
         foreach (var obj in objectsInRange)
@@ -164,9 +172,9 @@ public class Props : MonoBehaviour
 
                 if (currentEnemy != null)
                 {
-                    durability--;
-
                     currentEnemy.GetDamage(damage);
+
+                    durability--;
 
                     if (durability < minDurability)
                     {
@@ -175,6 +183,8 @@ public class Props : MonoBehaviour
                 }
             }
         }
+
+        StartCoroutine(SetHittingInFalse());
     }
 
     private void GetComponents()
@@ -192,11 +202,22 @@ public class Props : MonoBehaviour
 
     private IEnumerator CanThrowTheObject()
     {
-        // Esperar un frame 
-
-        float waitingTime = 0f;
-        yield return new WaitForSeconds(waitingTime);
+        yield return null; // Esto espera un frame
         canThrow = true;
+    }
+
+    private IEnumerator SetHittingInFalse()
+    {
+        float waitingTime = 0.4f; // Aca va el tiempo que dura en hacer la animacion de golpe con el objeto
+        yield return new WaitForSeconds(waitingTime);
+        isHitting = false;
+    }
+
+    private IEnumerator SetCurrentPropInNull()
+    {
+        float waitingTime = 0.35f; // Aca va el tiempo que dura en hacer la animacion de tirar el objeto
+        yield return new WaitForSeconds(waitingTime);
+        playerController.CurrentProp = null;
     }
 
     private void HandleEnterCollisions(Collision2D collision)
@@ -223,8 +244,8 @@ public class Props : MonoBehaviour
 
             if (currentEnemy != null)
             {
-                DestroyThisGameObject();
                 currentEnemy.GetDamage(damage);
+                DestroyThisGameObject();
             }
         }
     }
@@ -240,15 +261,22 @@ public class Props : MonoBehaviour
     private void DestroyThisGameObject()
     {
         // Buscar todos los sprites que tangan los enemigos, como las manos, etc.
-        SpriteRenderer[] childSprites = GetComponentsInChildren<SpriteRenderer>();
+        SpriteRenderer[] childSprites = GetComponentsInChildren<SpriteRenderer>(true);
 
         foreach (var child in childSprites)
         {
-            child.enabled = false;
+            if (child.gameObject != gameObject)
+            {
+                child.enabled = false;
+            }
+        }
+
+        if (hasBeenThrown)
+        {
+            spriteRenderer.enabled = false;
         }
 
         boxCollider.enabled = false;
-        spriteRenderer.enabled = false;
         rb.simulated = false;
         rb.isKinematic = true;
 
@@ -259,7 +287,7 @@ public class Props : MonoBehaviour
 
         else
         {
-            Destroy(gameObject);
+            Destroy(gameObject, 0.2f); // tiempo en terminar el transcurso de la animacion golpe
         }
     }
 
@@ -267,7 +295,7 @@ public class Props : MonoBehaviour
     {
         anim.SetBool("Throw", hasBeenThrown);
 
-        anim.SetBool("Rotate", pickedUp && weight == 0);
-        anim.SetBool("Rotate_heavy", pickedUp && weight == 1);
+        anim.SetBool("Rotate_Light", pickedUp && weight == "light");
+        anim.SetBool("Rotate_heavy", pickedUp && weight == "heavy");
     }
 }

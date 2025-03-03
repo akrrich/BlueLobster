@@ -42,6 +42,6 @@ public class EnemyShoot : Enemy
     protected override void SetPropScriptAndProperties()
     {
         Props props = gameObject.AddComponent<Props>();
-        props.SetProperties(damage: 5, velocity: 10, durability: 1, weight: 1, radius: 1);
+        props.SetProperties(damage: 5, velocity: 10, durability: 1, weight: "heavy", radius: 1);
     }
 }

@@ -13,7 +13,29 @@ public class ShadowPlayer : MonoBehaviour
     }
 
 
-    public void animations(int choice, Vector2 localScale, int choice_hands)
+    public void Animations(PlayerController playerController)
+    {
+        //animacion de sombra idle
+        if (playerController.Rb.velocity.x == 0) SettingAnimations(1, playerController.transform.localScale, 1);
+
+        //animacion de sombra running
+        if (playerController.Rb.velocity.x != 0) SettingAnimations(2, playerController.transform.localScale, 2);
+
+        //animacion de sombra lanzamiento
+        if (playerController.CurrentProp != null && playerController.CurrentProp.HasBeenThrown && playerController.Rb.velocity.x == 0) SettingAnimations(3, playerController.transform.localScale, 3);
+        if (playerController.CurrentProp != null && playerController.CurrentProp.HasBeenThrown && playerController.Rb.velocity.x != 0) SettingAnimations(9, playerController.transform.localScale, 3);
+
+        //animacion de sombra sostener objeto idle
+        if (playerController.CurrentProp != null && playerController.CurrentProp.Weight == "heavy" && playerController.Rb.velocity.x == 0) SettingAnimations(1, playerController.transform.localScale, 4);
+        if (playerController.CurrentProp != null && playerController.CurrentProp.Weight == "light" && playerController.Rb.velocity.x == 0) SettingAnimations(1, playerController.transform.localScale, 5);
+
+        //animacion de sombra sostener objeto running
+        if (playerController.CurrentProp != null && playerController.CurrentProp.Weight == "heavy" && playerController.Rb.velocity.x != 0) SettingAnimations(2, playerController.transform.localScale, 4);
+        if (playerController.CurrentProp != null && playerController.CurrentProp.Weight == "light" && playerController.Rb.velocity.x != 0) SettingAnimations(2, playerController.transform.localScale, 5);
+    }
+
+
+    private void SettingAnimations(int choice, Vector2 localScale, int choice_hands)
     {
         if (localScale.x > 0) transform.localScale = new Vector2(0.82f, 0.72f);
         else transform.localScale = new Vector2(0.82f, 0.72f);
@@ -37,13 +59,12 @@ public class ShadowPlayer : MonoBehaviour
         leftHandAnim.SetBool("Holding_light", choice_hands == 5);
     }
 
-
     private void GetComponents()
     {
         anim = GetComponent<Animator>();
 
-        rightHandAnim = transform.Find("Right hand shadow").GetComponentInChildren<Animator>();
-        leftHandAnim = transform.Find("Left hand shadow").GetComponentInChildren<Animator>();
+        rightHandAnim = transform.Find("Right hand shadow").GetComponent<Animator>();
+        leftHandAnim = transform.Find("Left hand shadow").GetComponent<Animator>();
     }
 }
 

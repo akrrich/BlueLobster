@@ -356,10 +356,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 2
-  velocity: 15
   durability: 1
-  weight: 0
+  velocity: 15
   radius: 0.5
+  weight: light
 --- !u!95 &4983642441381352932
 Animator:
   serializedVersion: 5

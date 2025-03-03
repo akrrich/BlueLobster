@@ -399,10 +399,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
+  durability: 1
   velocity: 15
-  durability: 2
-  weight: 0
   radius: 0.4
+  weight: light
 --- !u!1 &4902343871970045128
 GameObject:
   m_ObjectHideFlags: 0

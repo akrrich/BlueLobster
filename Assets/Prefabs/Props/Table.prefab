@@ -293,11 +293,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e56676ecff73c6d48a2339196b736e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 2
+  damage: 1
+  durability: 2
   velocity: 15
-  durability: 3
-  weight: 1
   radius: 0.9
+  weight: heavy
 --- !u!50 &1961119909648447450
 Rigidbody2D:
   serializedVersion: 4
@@ -476,7 +476,7 @@ Animator:
   m_GameObject: {fileID: 4556293549887180344}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f0e717f92e4afbe4d84830c7599364ee, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

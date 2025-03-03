@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -21,7 +20,6 @@ public class PlayerController : MonoBehaviour
     private int minHealth = 1;
     private int UPDOWNdirection = 0;
     private int damage = 1;
-    private int lastWeight = 0;
 
     private float radius = 1f;
     private float speed = 8;
@@ -29,9 +27,10 @@ public class PlayerController : MonoBehaviour
     private bool isAlive = true;
     private bool canPunch = false;
     private bool isPunching = false;
-    private bool isHitting = false;
-    private bool isThrowing = false;
 
+    public Props CurrentProp { get => currentProp; set => currentProp = value; }
+
+    public Rigidbody2D Rb { get => rb; }
     public Animator RightHandAnim { get => rightHandAnim; }
 
     public bool IsAlive { get => isAlive; }
@@ -49,7 +48,6 @@ public class PlayerController : MonoBehaviour
     {
         InputsForControllerAndPC();
         Animations();
-        AnimationsShadow();
     }
 
     // Simulacion de FixedUpdate
@@ -196,7 +194,6 @@ public class PlayerController : MonoBehaviour
                 if (DeviceManager.GetLeftClickOrSquareX()) // Golpear con objeto
                 {
                     Hit();
-                    StartCoroutine(throwing());
                 }
 
 
@@ -207,7 +204,7 @@ public class PlayerController : MonoBehaviour
 
                 if (DeviceManager.GetLeftClickOrSquareX()) // Golpear con Puño
                 {
-                    //Punch();
+                    Punch();
                 }
             }
         }
@@ -222,17 +219,15 @@ public class PlayerController : MonoBehaviour
             if (currentProp != null)
             {
                 currentProp.PickObject(propPositionLight, propPositionHeavy);
-                lastWeight = currentProp.Weight;
             }
         }
     }
 
     private void Hit()
     {
-        if (currentProp != null)
+        if (currentProp != null && !currentProp.IsHitting)
         {
             currentProp.HitWithObject();
-            isHitting = true;
         }
     }
 
@@ -240,12 +235,7 @@ public class PlayerController : MonoBehaviour
     {
         if (currentProp != null && currentProp.CanThorw)
         {
-            isThrowing = true;
-            isHitting = false;
-            currentProp.ThrowObject(UPDOWNdirection);
-            lastWeight = currentProp.Weight;
-            currentProp = null;
-            StartCoroutine(throwing());
+            currentProp.ThrowObject(UPDOWNdirection, currentProp);
         }
     }
 
@@ -261,29 +251,25 @@ public class PlayerController : MonoBehaviour
     {
         bool isMoving = rb.velocity.x != 0 || rb.velocity.y != 0;
 
-        if (currentProp != null)
-        {
-            //si el prop se rompe, no lo tira
-            if (currentProp.durability <= 0) isThrowing = false;
-        }
-
-        bool isHoldingHeavy = currentProp != null && currentProp.Weight == 1 && !isHitting && !isThrowing;
-        bool isHoldingLight = currentProp != null && currentProp.Weight == 0 && !isHitting && !isThrowing;
-
+        bool isHoldingLight = currentProp != null && currentProp.Weight == "light" && !currentProp.IsHitting && !currentProp.HasBeenThrown;
+        bool isHoldingHeavy = currentProp != null && currentProp.Weight == "heavy" && !currentProp.IsHitting && !currentProp.HasBeenThrown;
 
         if (isAlive)
         {
+            //animacion sombra player
+            shadow.Animations(this);
+
             //animacion running e idle player
             anim.SetBool("Running", isMoving);
             anim.SetBool("Idle", !isMoving);
 
             //animacion running manos
-            rightHandAnim.SetBool("Running", isMoving && currentProp == null && !isThrowing);
-            leftHandAnim.SetBool("Running", isMoving && currentProp == null && !isThrowing);
+            rightHandAnim.SetBool("Running", isMoving && currentProp == null);
+            leftHandAnim.SetBool("Running", isMoving && currentProp == null);
 
             //animacion idle manos
-            rightHandAnim.SetBool("Idle", !isMoving && currentProp == null && !isThrowing);
-            leftHandAnim.SetBool("Idle", !isMoving && currentProp == null && !isThrowing);
+            rightHandAnim.SetBool("Idle", !isMoving && currentProp == null);
+            leftHandAnim.SetBool("Idle", !isMoving && currentProp == null);
 
             //animacion holding heavy object manos
             rightHandAnim.SetBool("Holding_heavy", isHoldingHeavy);
@@ -294,20 +280,20 @@ public class PlayerController : MonoBehaviour
             leftHandAnim.SetBool("Holding_light", isHoldingLight);
 
             //animacion tirar light object manos
-            rightHandAnim.SetBool("Throw_light", isThrowing && lastWeight == 0);
-            leftHandAnim.SetBool("Throw_light", isThrowing && lastWeight == 0);
+            rightHandAnim.SetBool("Throw_light", currentProp != null && currentProp.HasBeenThrown && currentProp.Weight == "light");
+            leftHandAnim.SetBool("Throw_light", currentProp != null && currentProp.HasBeenThrown && currentProp.Weight == "light");
 
             //animacion golpear con light object manos
-            rightHandAnim.SetBool("Hit_light", isHitting && lastWeight == 0);
-            leftHandAnim.SetBool("Hit_light", isHitting && lastWeight == 0);
+            rightHandAnim.SetBool("Hit_light", currentProp != null && currentProp.IsHitting && currentProp.Weight == "light");
+            leftHandAnim.SetBool("Hit_light", currentProp != null && currentProp.IsHitting && currentProp.Weight == "light");
 
             //animacion tirar heavy object manos
-            rightHandAnim.SetBool("Throw_heavy", isThrowing && lastWeight == 1);
-            leftHandAnim.SetBool("Throw_heavy", isThrowing && lastWeight == 1);
+            rightHandAnim.SetBool("Throw_heavy", currentProp != null && currentProp.HasBeenThrown && currentProp.Weight == "heavy");
+            leftHandAnim.SetBool("Throw_heavy", currentProp != null && currentProp.HasBeenThrown && currentProp.Weight == "heavy");
 
             //animacion golpear con heavy object manos
-            rightHandAnim.SetBool("Hit_heavy", isHitting && lastWeight == 1);
-            leftHandAnim.SetBool("Hit_heavy", isHitting && lastWeight == 1);
+            rightHandAnim.SetBool("Hit_heavy", currentProp != null && currentProp.IsHitting && currentProp.Weight == "heavy");
+            leftHandAnim.SetBool("Hit_heavy", currentProp != null && currentProp.IsHitting && currentProp.Weight == "heavy");
 
             // agregar animacion de piña 
         }
@@ -316,34 +302,6 @@ public class PlayerController : MonoBehaviour
         {
             // agregar animacion de muerte
         }
-    }
-    
-    private void AnimationsShadow()
-    {
-        //animacion de sombra idle
-        if (rb.velocity.x == 0) shadow.animations(1, transform.localScale, 1);
-
-        //animacion de sombra running
-        if (rb.velocity.x != 0) shadow.animations(2, transform.localScale, 2);
-
-        //animacion de sombra lanzamiento
-        if (isThrowing && rb.velocity.x == 0) shadow.animations(3, transform.localScale, 3);
-        if (isThrowing && rb.velocity.x != 0) shadow.animations(9, transform.localScale, 3);
-
-        //animacion de sombra sostener objeto idle
-        if (currentProp != null && currentProp.Weight == 1 && rb.velocity.x == 0) shadow.animations(1, transform.localScale, 4);
-        if (currentProp != null && currentProp.Weight == 0 && rb.velocity.x == 0) shadow.animations(1, transform.localScale, 5);
-
-        //animacion de sombra sostener objeto running
-        if (currentProp != null && currentProp.Weight == 1 && rb.velocity.x != 0) shadow.animations(2, transform.localScale, 4);
-        if (currentProp != null && currentProp.Weight == 0 && rb.velocity.x != 0) shadow.animations(2, transform.localScale, 5);
-    }
-
-    private IEnumerator throwing()
-    {
-        yield return new WaitForSeconds(0.40f);
-        isThrowing = false;
-        isHitting = false;
     }
 
     private void CheckIfPlayerIsAlive()
