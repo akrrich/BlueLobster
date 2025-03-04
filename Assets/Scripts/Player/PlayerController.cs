@@ -4,6 +4,7 @@ public class PlayerController : MonoBehaviour
 {
     private Props currentProp;
     private ShadowPlayer shadow;
+    private PlayerColisions playerColisions;
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -33,14 +34,20 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D Rb { get => rb; }
     public Animator RightHandAnim { get => rightHandAnim; }
 
+    public int Damage { get => damage; }
+
     public bool IsAlive { get => isAlive; }
+    public bool CanPunch { get => canPunch; set => canPunch = value; }
+    public bool IsPunching { get => isPunching; set => isPunching = value; }
 
 
     void Awake()
     {
         GetComponents();
+        CreateInstances();
         SubscribeToGameManagerEvents();
         SubscribeToInputEvents();
+        SuscribeToEnemyEvent();
     }
 
     // Simulacion de Update
@@ -58,35 +65,36 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        CheckEnterColisionWithEnemy(collision);
-        CheckEnterColisionAndTriggerWithPropToAEnabledButton(collision.collider);
+        playerColisions.CheckEnterColisionWithEnemy(collision);
+        playerColisions.CheckEnterColisionAndTriggerWithPropToAEnabledButton(collision.collider);
     }
 
     void OnCollisionStay2D(Collision2D collision)
     {
-        CheckStayColisionWithEnemy(collision);
+        playerColisions.CheckStayColisionWithEnemy(collision);
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        CheckExitColisionWithEnemy(collision);
-        CheckExitColisionAndTriggerWithPropToDisabledButton(collision.collider);
+        playerColisions.CheckExitColisionWithEnemy(collision);
+        playerColisions.CheckExitColisionAndTriggerWithPropToDisabledButton(collision.collider);
     }
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        CheckEnterColisionAndTriggerWithPropToAEnabledButton(collider);
+        playerColisions.CheckEnterColisionAndTriggerWithPropToAEnabledButton(collider);
     }
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        CheckExitColisionAndTriggerWithPropToDisabledButton(collider);
+        playerColisions.CheckExitColisionAndTriggerWithPropToDisabledButton(collider);
     }
 
     void OnDestroy()
     {
         UnsubscribeToGameManagerEvents();
         UnsubscribeToInputEvents();
+        UnsubscribeToEnemyEvents();
     }
 
     void OnDrawGizmosSelected()
@@ -116,6 +124,11 @@ public class PlayerController : MonoBehaviour
         leftHandAnim = transform.Find("Left hand").GetComponent<Animator>();
 
         shadow = transform.Find("Shadow player").GetComponent<ShadowPlayer>();
+    }
+
+    private void CreateInstances()
+    {
+        playerColisions = new PlayerColisions(this);
     }
 
     private void SubscribeToGameManagerEvents()
@@ -150,6 +163,16 @@ public class PlayerController : MonoBehaviour
             InputTouch.OnThrow -= Throw;
             InputTouch.OnPickUp -= PickUp;
         }
+    }
+
+    private void SuscribeToEnemyEvent()
+    {
+        Enemy.OnEnemyDie += SetPunchInFalse;
+    }
+
+    private void UnsubscribeToEnemyEvents()
+    {
+        Enemy.OnEnemyDie -= SetPunchInFalse;
     }
 
     private void Movement()
@@ -195,7 +218,6 @@ public class PlayerController : MonoBehaviour
                 {
                     Hit();
                 }
-
 
                 if (DeviceManager.GetRightClickOrCircleB()) // Tirar
                 {
@@ -317,55 +339,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void CheckEnterColisionWithEnemy(Collision2D collision)
+    private void SetPunchInFalse()
     {
-        if (collision.collider.CompareTag("Enemy"))
-        {
-            canPunch = true;
-        }
-    }
-
-    private void CheckStayColisionWithEnemy(Collision2D collision)
-    {
-        if (collision.collider.CompareTag("Enemy"))
-        {
-            canPunch = true;
-
-            if (isPunching)
-            {
-                Enemy currentEnemy = collision.collider.GetComponent<Enemy>();
-
-                if (currentEnemy != null)
-                {
-                    currentEnemy.GetDamage(damage);
-                }
-
-                isPunching = false;
-            }
-        }
-    }
-
-    private void CheckExitColisionWithEnemy(Collision2D collision)
-    {
-        if (collision.collider.CompareTag("Enemy"))
-        {
-            canPunch = false;
-        }
-    }
-
-    private void CheckEnterColisionAndTriggerWithPropToAEnabledButton(Collider2D collider)
-    {
-        if (currentProp == null && collider.CompareTag("Objeto"))
-        {
-            PlayerEvents.OnEnabledPickUpButton?.Invoke();
-        }
-    }
-
-    private void CheckExitColisionAndTriggerWithPropToDisabledButton(Collider2D collider)
-    {
-        if (collider.CompareTag("Objeto"))
-        {
-            PlayerEvents.OnDisabledPickUpButton?.Invoke();
-        }
+        canPunch = false;
     }
 }

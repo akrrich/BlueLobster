@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using UnityEngine.InputSystem.UI;
 
 public class EventSystemGame : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class EventSystemGame : MonoBehaviour
 
     void Awake()
     {
+        SlectInputModule();
         GetComponents();
         InitializeSelectedButton();
         SuscribeToGameManagerEvents();
@@ -53,6 +55,25 @@ public class EventSystemGame : MonoBehaviour
         UnsuscribeToFinalScreensEvents();
     }
 
+
+    private void SlectInputModule()
+    {
+        if (DeviceManager.CurrentPlatform == "PC")
+        {
+            return;
+        }
+
+        else
+        {
+            // destruir el nuevo input system y el script adjunto
+            InputSystemUIInputModule inputSystemUIInputModule = GetComponent<InputSystemUIInputModule>();
+            Destroy(inputSystemUIInputModule);
+            Destroy(this);
+
+            // agregar el input system viejo
+            StandaloneInputModule standaloneInputModule = gameObject.AddComponent<StandaloneInputModule>();
+        }
+    }
 
     private void GetComponents()
     {

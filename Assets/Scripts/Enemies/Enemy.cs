@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public abstract class Enemy : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public abstract class Enemy : MonoBehaviour
     private Animator anim;
     private SpriteRenderer spriteRenderer;
     private AudioSource enemyAudio;
+
+    private static event Action onEnemyDie;
 
     private int currentPointIndex = 0;
     protected int health;
@@ -24,6 +27,8 @@ public abstract class Enemy : MonoBehaviour
     protected bool canExecuteAttackInUpdate;
 
     protected Vector2 currentTarget;
+
+    public static Action OnEnemyDie { get => onEnemyDie; set => onEnemyDie = value; }
 
 
     void Awake()
@@ -68,6 +73,8 @@ public abstract class Enemy : MonoBehaviour
 
         if (health < minHealth)
         {
+            onEnemyDie?.Invoke();
+
             ConvertToPropMode();
         }
     }
@@ -177,7 +184,7 @@ public abstract class Enemy : MonoBehaviour
 
         do
         {
-            newPointIndex = Random.Range(0, patrolPoints.Length);
+            newPointIndex = UnityEngine.Random.Range(0, patrolPoints.Length);
 
         } while (newPointIndex == currentPointIndex);
 
@@ -233,6 +240,7 @@ public abstract class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(timeToChangePropMode);
 
+        // esto lo hago porque el enemy como tal esta dentro de un gameObject vacio
         Transform parent = transform.parent;
         transform.SetParent(null);
 

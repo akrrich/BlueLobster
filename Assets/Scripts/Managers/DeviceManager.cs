@@ -9,6 +9,8 @@ public class DeviceManager
     public DeviceManager()
     {
         GetCurrentPlatform();
+
+        //currentPlatform = "Mobile";
     }
 
     public static Vector2 GetMovementInput()

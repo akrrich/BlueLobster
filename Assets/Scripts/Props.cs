@@ -114,7 +114,7 @@ public class Props : MonoBehaviour
 
         //animaciones y sorting layer
 
-        spriteRenderer.sortingOrder = 5;
+        spriteRenderer.sortingOrder = 5; // para que quede por ecnima del player el objeto
         Animations();
 
         StartCoroutine(CanThrowTheObject());
@@ -129,7 +129,7 @@ public class Props : MonoBehaviour
 
         //parte de fisicas
 
-        gameObject.layer = 6;
+        gameObject.layer = 6; // esto para que es?
         rb.isKinematic = false;
         rb.simulated = true;
         transform.SetParent(null);
@@ -287,7 +287,7 @@ public class Props : MonoBehaviour
 
         else
         {
-            Destroy(gameObject, 0.2f); // tiempo en terminar el transcurso de la animacion golpe
+            Destroy(gameObject, 0.225f); // tiempo en terminar el transcurso de la animacion golpe
         }
     }
 
